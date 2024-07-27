@@ -54,9 +54,8 @@ def spotify_auth_setup():
     }))
 
 
-@app.get("/apitest")
-def apitest():
-    session = oauth2.get_oauth_session()
-    me = spotify.get_me(session)
-
-    return me
+@app.get("/playback/state")
+def get_spotify_playback_state():
+    return spotify.get_playback_state(
+        oauth2.get_oauth_session()
+    )
