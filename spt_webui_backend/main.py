@@ -12,6 +12,8 @@ from spt_webui_backend.schemas import AccessToken
 
 app = fastapi.FastAPI()
 
+Spotify = spotify.Spotify()
+
 
 @app.get("/auth/callback")
 def spotify_auth_callback(
@@ -56,9 +58,7 @@ def spotify_auth_setup():
 
 @app.get("/playback/state")
 def get_spotify_playback_state():
-    return spotify.get_playback_state(
-        oauth2.get_oauth_session()
-    )
+    return Spotify.get_playback_state()
 
 
 # TODO: VALIDATE URL!!
