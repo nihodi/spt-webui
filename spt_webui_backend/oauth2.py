@@ -1,9 +1,10 @@
-import os
 import json
-from datetime import datetime
+import os
+from datetime import datetime, timedelta
 from typing import Optional
 
 import pydantic
+import requests
 import requests_oauthlib
 
 from spt_webui_backend import schemas
@@ -46,9 +47,29 @@ def get_oauth_session(token: Optional[schemas.AccessToken] = None) -> requests_o
         }
     )
     # if token is about to expire, request a new one
-    if (token.expires_at - datetime.now()).total_seconds() < 180:
-        print("refreshing access token")
-        client.refresh_token("https://accounts.spotify.com/api/token")
+    if (token.expires_at - datetime.now()).total_seconds() < 300:
+        resp = requests.post(
+            "https://accounts.spotify.com/api/token",
+            data={
+                "grant_type": "refresh_token",
+                "refresh_token": token.refresh_token,
+            },
+            headers={
+                "Content-Type": "application/x-www-form-urlencoded",
+            },
+            auth=(ENVIRONMENT.spotify_client_id, ENVIRONMENT.spotify_client_secret)
+        )
+        access_token = resp.json()
+        expires = datetime.now() + timedelta(seconds=access_token["expires_in"])
+
+        token = schemas.AccessToken(
+            access_token=access_token["access_token"],
+            refresh_token=token.refresh_token,
+            expires_at=expires)
+
+        set_current_token(token)
+
+        return get_oauth_session()
 
     return client
 
