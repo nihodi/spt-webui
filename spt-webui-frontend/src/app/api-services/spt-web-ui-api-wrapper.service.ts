@@ -22,4 +22,12 @@ export class SptWebUiApiWrapperService {
 	getQueue(): Observable<SpotifyQueue> {
 		return this.httpClient.get<any>(`${environment.api_prefix}/playback/queue`);
 	}
+
+	addSongToQueue(url: string): Observable<null> {
+		return this.httpClient.post<null>(`${environment.api_prefix}/playback/queue`, "", {
+			params: {
+				url
+			}
+		});
+	}
 }

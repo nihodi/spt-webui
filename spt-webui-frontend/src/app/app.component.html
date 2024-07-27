@@ -1,6 +1,4 @@
-@if (loadedData() !== null) {
-	<pre>
-		{{ loadedData() | json }}
-	</pre>
-
-}
+<form [formGroup]="addToQueueForm" (ngSubmit)="addToQueue($event)">
+	<input type="text" [formControl]="addToQueueForm.controls.url">
+	<button type="submit" [disabled]="!addToQueueForm.valid">Add to queue</button>
+</form>
