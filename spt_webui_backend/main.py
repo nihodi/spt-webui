@@ -12,8 +12,11 @@ from spt_webui_backend.schemas import AccessToken
 
 app = fastapi.FastAPI()
 
-Spotify = spotify.Spotify()
-
+# TODO: maybe refactor into a FastAPI dependency
+try:
+    Spotify = spotify.Spotify()
+except Exception as e:
+    pass
 
 @app.get("/auth/callback")
 def spotify_auth_callback(
@@ -38,12 +41,15 @@ def spotify_auth_callback(
     token = AccessToken(access_token=token["access_token"], refresh_token=token["refresh_token"], expires_at=expires)
 
     session = oauth2.get_oauth_session(token)
-    user = spotify.get_me(session)
+    tmp_spotify = spotify.Spotify(session)
+    user = tmp_spotify.get_me()
 
     if user.id != ENVIRONMENT.spotify_allowed_account_id:
         raise fastapi.HTTPException(status_code=401, detail="You are not allowed here ;)")
 
+    global Spotify
     oauth2.set_current_token(token)
+    Spotify = spotify.Spotify()
 
 
 @app.get("/auth/setup")

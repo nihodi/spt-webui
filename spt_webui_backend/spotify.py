@@ -1,17 +1,11 @@
 import datetime
 import urllib.parse
-from typing import Dict, Tuple
+from typing import Dict, Tuple, Optional
 
 import requests
 from requests_oauthlib import OAuth2Session
 
 from spt_webui_backend import schemas, oauth2
-
-
-def get_me(
-        session: OAuth2Session,
-) -> schemas.SpotifyUser:
-    return schemas.SpotifyUser.model_validate(session.get("https://api.spotify.com/v1/me").json())
 
 
 def get_track_id_from_shared_url(
@@ -35,8 +29,11 @@ def add_track_to_queue(
 class Spotify:
     _get_cache: Dict[str, Tuple[requests.Response, datetime.datetime]] = {}
 
-    def __init__(self):
-        self.session = oauth2.get_oauth_session()
+    def __init__(self, session: Optional[OAuth2Session] = None):
+        if not session:
+            self.session = oauth2.get_oauth_session()
+        else:
+            self.session = session
 
     def get_playback_state(self):
         resp = self._do_get_request("https://api.spotify.com/v1/me/player")
@@ -44,6 +41,9 @@ class Spotify:
             return None
 
         return resp.json()
+
+    def get_me(self) -> schemas.SpotifyUser:
+        return schemas.SpotifyUser.model_validate(self._do_get_request("https://api.spotify.com/v1/me").json())
 
     def _do_get_request(self, url: str, can_cache: bool = True, **kwargs) -> requests.Response:
         if can_cache:
