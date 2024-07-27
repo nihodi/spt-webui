@@ -1,3 +1,5 @@
+import urllib.parse
+
 from requests_oauthlib import OAuth2Session
 
 from spt_webui_backend import schemas
@@ -17,3 +19,22 @@ def get_playback_state(
         return None
 
     return resp.json()
+
+
+def get_track_id_from_shared_url(
+        session: OAuth2Session,
+        url: str
+):
+    # should look like this
+    # https://open.spotify.com/track/398dL22bDbKbAmiOnPaq7o?si=ff5f409fcf8744b1
+    url = urllib.parse.urlparse(url)
+
+    return url.path[7:]
+
+
+def add_track_to_queue(
+        session: OAuth2Session,
+        uri: str
+):
+    resp = session.post("https://api.spotify.com/v1/me/player/queue?" + urllib.parse.urlencode({"uri": uri}))
+    resp.raise_for_status()

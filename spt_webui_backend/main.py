@@ -59,3 +59,13 @@ def get_spotify_playback_state():
     return spotify.get_playback_state(
         oauth2.get_oauth_session()
     )
+
+
+# TODO: VALIDATE URL!!
+@app.post("/playback/queue")
+def add_spotify_queue_item(
+        url: str
+):
+    session = oauth2.get_oauth_session()
+    track_id = spotify.get_track_id_from_shared_url(session, url)
+    spotify.add_track_to_queue(session, f"spotify:track:{track_id}")
