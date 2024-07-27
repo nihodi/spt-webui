@@ -51,3 +51,6 @@ def get_oauth_session(token: Optional[schemas.AccessToken] = None) -> requests_o
         client.refresh_token("https://accounts.spotify.com/api/token")
 
     return client
+
+
+SPOTIFY_SCOPES = " ".join(["user-read-currently-playing", "user-modify-playback-state", "user-read-playback-state"])

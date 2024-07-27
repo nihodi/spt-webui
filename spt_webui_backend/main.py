@@ -50,7 +50,7 @@ def spotify_auth_setup():
         "client_id": ENVIRONMENT.spotify_client_id,
         "response_type": "code",
         "redirect_uri": ENVIRONMENT.spotify_redirect_uri,
-        "scope": " ".join(["user-read-currently-playing"]),
+        "scope": oauth2.SPOTIFY_SCOPES,
     }))
 
 
