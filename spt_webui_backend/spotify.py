@@ -22,7 +22,6 @@ def get_playback_state(
 
 
 def get_track_id_from_shared_url(
-        session: OAuth2Session,
         url: str
 ):
     # should look like this
