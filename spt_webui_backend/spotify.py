@@ -1,4 +1,6 @@
+import datetime
 import urllib.parse
+from typing import Dict, Tuple
 
 import requests
 from requests_oauthlib import OAuth2Session
@@ -31,6 +33,8 @@ def add_track_to_queue(
 
 
 class Spotify:
+    _get_cache: Dict[str, Tuple[requests.Response, datetime.datetime]] = {}
+
     def __init__(self):
         self.session = oauth2.get_oauth_session()
 
@@ -41,7 +45,17 @@ class Spotify:
 
         return resp.json()
 
-    def _do_get_request(self, url: str, **kwargs) -> requests.Response:
+    def _do_get_request(self, url: str, can_cache: bool = True, **kwargs) -> requests.Response:
+        if can_cache:
+            cache = self._get_cache.get(url)
+
+            if cache is not None:
+                (resp, timestamp) = cache
+                # if less than 15 seconds have passed, return cache
+                print("returned cached response for url: " + url)
+                if (datetime.datetime.now() - timestamp).total_seconds() < 15:
+                    return resp
+
         resp = self.session.get(url, **kwargs)
 
         # retry once if access token is invalid
@@ -50,4 +64,11 @@ class Spotify:
             resp = self.session.get(url, **kwargs)
 
         resp.raise_for_status()
+
+        if can_cache:
+            self._get_cache[url] = (resp, datetime.datetime.now())
+
         return resp
+
+    def _refresh_token(self):
+        self.session = oauth2.get_oauth_session()
