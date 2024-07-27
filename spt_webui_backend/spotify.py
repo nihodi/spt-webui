@@ -18,6 +18,7 @@ def get_track_id_from_shared_url(
     return url.path[7:]
 
 
+# TODO: refactor the rest of these functions into the class
 def add_track_to_queue(
         session: OAuth2Session,
         uri: str
@@ -44,6 +45,9 @@ class Spotify:
 
     def get_me(self) -> schemas.SpotifyUser:
         return schemas.SpotifyUser.model_validate(self._do_get_request("https://api.spotify.com/v1/me").json())
+
+    def get_playback_queue(self):
+        return self._do_get_request("https://api.spotify.com/v1/me/player/queue").json()
 
     def _do_get_request(self, url: str, can_cache: bool = True, **kwargs) -> requests.Response:
         if can_cache:
