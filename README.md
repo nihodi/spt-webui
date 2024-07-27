@@ -1,0 +1,1 @@
+`spt-webui-frontend` houses an [Angular](https://angular.dev) project.
