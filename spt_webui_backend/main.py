@@ -1,16 +1,14 @@
-from typing import Optional, Annotated
 import datetime
+import urllib.parse
+from typing import Optional, Annotated
 
 import fastapi
-from fastapi import Query
-from fastapi.openapi.models import Example
-from fastapi.responses import JSONResponse
-import urllib.parse
-
 import requests_oauthlib
+from fastapi import Query
+from fastapi.responses import JSONResponse
 
-from spt_webui_backend.environment import ENVIRONMENT
 from spt_webui_backend import oauth2, spotify
+from spt_webui_backend.environment import ENVIRONMENT
 from spt_webui_backend.schemas import AccessToken
 
 app = fastapi.FastAPI()
