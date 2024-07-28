@@ -2,6 +2,7 @@ from typing import Optional
 import datetime
 
 import fastapi
+from fastapi.responses import JSONResponse
 import urllib.parse
 
 import requests_oauthlib
@@ -63,9 +64,12 @@ def spotify_auth_setup():
     }))
 
 
-@app.get("/playback/state")
+@app.get("/playback/state", responses={200: {}, 204: {"model": None, "description": "Playback not available or active"}})
 def get_spotify_playback_state():
-    return Spotify.get_playback_state()
+    state = Spotify.get_playback_state()
+    if state is None:
+        return JSONResponse(None, 204)
+    return state
 
 
 # TODO: VALIDATE URL!!
