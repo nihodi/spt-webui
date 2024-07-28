@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { JsonPipe } from "@angular/common";
+import { AsyncPipe, JsonPipe } from "@angular/common";
 import {
 	AbstractControl,
 	FormBuilder,
@@ -11,6 +11,8 @@ import {
 	Validators
 } from "@angular/forms";
 import { SptWebUiApiWrapperService } from "./api-services/spt-web-ui-api-wrapper.service";
+import { PlaybackStateService } from "./state-services/playback-state.service";
+import { TrackCardComponent } from "./track-card/track-card.component";
 
 const matchesSpotifyUrl: ValidatorFn = (control: AbstractControl): ValidationErrors | null => {
 	const regex = /https:\/\/open.spotify.com\/track\/[a-zA-Z0-9]+/g;
@@ -27,19 +29,23 @@ const matchesSpotifyUrl: ValidatorFn = (control: AbstractControl): ValidationErr
 @Component({
 	selector: 'app-root',
 	standalone: true,
-	imports: [RouterOutlet, JsonPipe, ReactiveFormsModule],
+	imports: [RouterOutlet, JsonPipe, ReactiveFormsModule, AsyncPipe, TrackCardComponent],
 	templateUrl: './app.component.html',
 	styleUrl: './app.component.scss'
 })
 export class AppComponent {
 
-	constructor(private fb: FormBuilder, private apiWrapper: SptWebUiApiWrapperService) {
+	constructor(
+		private fb: FormBuilder,
+		private apiWrapper: SptWebUiApiWrapperService,
+		protected playbackState: PlaybackStateService
+		) {
 		this.addToQueueForm = this.fb.group({
 			url: ['', [Validators.required, matchesSpotifyUrl]]
 		});
 	}
 
-	addToQueueForm: FormGroup<{url: FormControl<string | null>}>;
+	addToQueueForm: FormGroup<{ url: FormControl<string | null> }>;
 
 	addToQueue($event: SubmitEvent) {
 		const url = new URL(this.addToQueueForm.value.url!);

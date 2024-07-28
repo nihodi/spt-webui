@@ -1,0 +1,9 @@
+<div>
+	<img [src]="track().album.images.at(0)?.url" alt="Album cover">
+	<p>{{ track().name }}</p>
+	<ul>
+		@for (artist of track().artists; track artist.id) {
+			<li>{{ artist.name }}</li>
+		}
+	</ul>
+</div>

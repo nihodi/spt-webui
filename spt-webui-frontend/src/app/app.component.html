@@ -1,3 +1,8 @@
+@if((playbackState.playbackState$ | async) !== null) {
+	<app-track-card [track]="(playbackState.playbackState$ | async)?.item!"></app-track-card>
+}
+
+
 <form [formGroup]="addToQueueForm" (ngSubmit)="addToQueue($event)">
 	<input type="text" [formControl]="addToQueueForm.controls.url">
 	<button type="submit" [disabled]="!addToQueueForm.valid">Add to queue</button>
