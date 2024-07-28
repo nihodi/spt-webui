@@ -57,7 +57,7 @@ class Spotify:
             if cache is not None:
                 (resp, timestamp) = cache
                 # if less than 15 seconds have passed, return cache
-                print("returned cached response for url: " + url)
+                print(f"returned cached response for url: {method} {url}")
                 if (datetime.datetime.now() - timestamp).total_seconds() < 15:
                     return resp
 
