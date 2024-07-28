@@ -1,3 +1,22 @@
+export interface SpotifySimplifiedArtistObject {
+	href: string;
+	id: string;
+	uri: string;
+
+	external_urls: {
+		spotify: string;
+	}
+
+	name: string;
+	type: "artist";
+}
+
+export interface SpotifyImageObject {
+	url: string;
+	width: number;
+	height: number;
+}
+
 export interface TrackObject {
     id: string;
 
@@ -6,11 +25,32 @@ export interface TrackObject {
     popularity: number;
     explicit: boolean;
 
+	artists: SpotifySimplifiedArtistObject[];
+
     external_urls: {
         spotify: string;
     }
     href: string;
     uri: string;
+
+	album: {
+		id: string;
+
+		album_type: "album" | "single" | "compilation";
+		total_tracks: number;
+
+		external_urls: {
+			spotify: string;
+		}
+		href: string;
+		uri: string;
+
+		images: SpotifyImageObject[];
+
+		name: string;
+		release_date: string;
+		type: "album";
+	}
 
 
     type: "track";
