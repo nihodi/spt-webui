@@ -13,6 +13,7 @@ import {
 import { SptWebUiApiWrapperService } from "./api-services/spt-web-ui-api-wrapper.service";
 import { PlaybackStateService } from "./state-services/playback-state.service";
 import { TrackCardComponent } from "./track-card/track-card.component";
+import { TrackListComponent } from "./track-list/track-list.component";
 
 const matchesSpotifyUrl: ValidatorFn = (control: AbstractControl): ValidationErrors | null => {
 	const regex = /https:\/\/open.spotify.com\/track\/[a-zA-Z0-9]+/g;
@@ -29,7 +30,7 @@ const matchesSpotifyUrl: ValidatorFn = (control: AbstractControl): ValidationErr
 @Component({
 	selector: 'app-root',
 	standalone: true,
-	imports: [RouterOutlet, JsonPipe, ReactiveFormsModule, AsyncPipe, TrackCardComponent],
+	imports: [RouterOutlet, JsonPipe, ReactiveFormsModule, AsyncPipe, TrackCardComponent, TrackListComponent],
 	templateUrl: './app.component.html',
 	styleUrl: './app.component.scss'
 })

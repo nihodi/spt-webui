@@ -7,3 +7,8 @@
 	<input type="text" [formControl]="addToQueueForm.controls.url">
 	<button type="submit" [disabled]="!addToQueueForm.valid">Add to queue</button>
 </form>
+
+<h1>Current queue:</h1>
+@if ((playbackState.queue$ | async)?.queue !== undefined) {
+	<app-track-list [tracks]="(playbackState.queue$ | async)?.queue!"></app-track-list>
+}
