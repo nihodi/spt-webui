@@ -79,6 +79,6 @@ export interface PlaybackState {
 }
 
 export interface SpotifyQueue {
-	currently_playing: TrackObject;
+	currently_playing: TrackObject | null;
 	queue: TrackObject[];
 }
