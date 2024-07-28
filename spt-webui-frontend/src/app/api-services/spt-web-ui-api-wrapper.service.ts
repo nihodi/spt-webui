@@ -14,13 +14,13 @@ export class SptWebUiApiWrapperService {
 	) {
 	}
 
-	getPlaybackState(): Observable<PlaybackState> {
+	getPlaybackState(): Observable<PlaybackState | null> {
 		// any type is temporary
-		return this.httpClient.get<any>(`${environment.api_prefix}/playback/state`);
+		return this.httpClient.get<PlaybackState | null>(`${environment.api_prefix}/playback/state`);
 	}
 
 	getQueue(): Observable<SpotifyQueue> {
-		return this.httpClient.get<any>(`${environment.api_prefix}/playback/queue`);
+		return this.httpClient.get<SpotifyQueue>(`${environment.api_prefix}/playback/queue`);
 	}
 
 	addSongToQueue(url: string): Observable<null> {
