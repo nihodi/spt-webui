@@ -14,6 +14,7 @@ import { SptWebUiApiWrapperService } from "./api-services/spt-web-ui-api-wrapper
 import { PlaybackStateService } from "./state-services/playback-state.service";
 import { TrackCardComponent } from "./track-card/track-card.component";
 import { TrackListComponent } from "./track-list/track-list.component";
+import { HttpErrorResponse } from "@angular/common/http";
 
 const matchesSpotifyUrl: ValidatorFn = (control: AbstractControl): ValidationErrors | null => {
 	const regex = /https:\/\/open.spotify.com\/track\/[a-zA-Z0-9]+/g;
@@ -52,9 +53,18 @@ export class AppComponent {
 		const url = new URL(this.addToQueueForm.value.url!);
 		url.search = "";
 
+		this.addToQueueForm.disable();
+
 		this.apiWrapper.addSongToQueue(url.toString()).subscribe({
-			next: value => {
-				console.log("epic");
+			next: () => {
+				setTimeout(() => {
+					this.playbackState.updatePlaybackState();
+				}, 10);
+
+				this.addToQueueForm.reset();
+				this.addToQueueForm.enable();
+			}, error: (err: HttpErrorResponse) => {
+				this.addToQueueForm.enable();
 			}
 		})
 	}
