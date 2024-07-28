@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from "@angular/common/http";
 import { SptWebUiApiWrapperService } from "../api-services/spt-web-ui-api-wrapper.service";
 import { BehaviorSubject, Observable } from "rxjs";
-import { PlaybackState, SpotifyContextObject } from "../api-services/models";
+import { PlaybackState, SpotifyContextObject, SpotifyQueue } from "../api-services/models";
 
 @Injectable({
 	providedIn: 'root'
@@ -12,8 +12,15 @@ export class PlaybackStateService {
 	private _playbackState: BehaviorSubject<PlaybackState | null> = new BehaviorSubject<PlaybackState | null>(null);
 	playbackState$ = this._playbackState.asObservable();
 
+	private _spotifyQueue: BehaviorSubject<SpotifyQueue | null> = new BehaviorSubject<SpotifyQueue | null>(null);
+	queue$ = this._spotifyQueue.asObservable();
+
 	getPlaybackState(): PlaybackState | null {
 		return this._playbackState.getValue();
+	}
+
+	getQueue(): SpotifyQueue | null {
+		return this._spotifyQueue.getValue();
 	}
 
 	constructor(
@@ -29,6 +36,12 @@ export class PlaybackStateService {
 			next: state => {
 				this._playbackState.next(state);
 				this.schedulePlaybackStateUpdate();
+			}
+		});
+
+		this.apiWrapper.getQueue().subscribe({
+			next: state => {
+				this._spotifyQueue.next(state);
 			}
 		});
 	}
