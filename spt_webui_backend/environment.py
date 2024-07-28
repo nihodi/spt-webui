@@ -9,6 +9,9 @@ class Settings(BaseSettings):
 
     spotify_allowed_account_id: str
 
+    database_user: str
+    database_password: str
+
     class Config:
         env_file = ".env"
 

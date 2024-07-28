@@ -11,6 +11,9 @@ from spt_webui_backend import oauth2, spotify
 from spt_webui_backend.environment import ENVIRONMENT
 from spt_webui_backend.schemas import AccessToken
 
+import spt_webui_backend.database as database
+
+
 app = fastapi.FastAPI()
 
 # TODO: maybe refactor into a FastAPI dependency
