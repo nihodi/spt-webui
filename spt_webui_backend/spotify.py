@@ -18,15 +18,6 @@ def get_track_id_from_shared_url(
     return url.path[7:]
 
 
-# TODO: refactor the rest of these functions into the class
-def add_track_to_queue(
-        session: OAuth2Session,
-        uri: str
-):
-    resp = session.post("https://api.spotify.com/v1/me/player/queue?" + urllib.parse.urlencode({"uri": uri}))
-    resp.raise_for_status()
-
-
 class Spotify:
     _cache: Dict[str, Tuple[requests.Response, datetime.datetime]] = {}
 
@@ -49,6 +40,17 @@ class Spotify:
     def get_playback_queue(self):
         return self._do_request("GET", "https://api.spotify.com/v1/me/player/queue").json()
 
+    def add_track_to_queue(self, uri: str):
+        resp = self._do_request(
+            "POST",
+            "https://api.spotify.com/v1/me/player/queue?" + urllib.parse.urlencode({"uri": uri}),
+            False
+        )
+        resp.raise_for_status()
+
+        # remove queue cache
+        self._cache.pop("GET https://api.spotify.com/v1/me/player/queue")
+
     def _do_request(self, method: Literal["GET", "POST"], url: str, can_cache: bool = True,
                     **kwargs) -> requests.Response:
         if can_cache:
@@ -60,6 +62,9 @@ class Spotify:
                 print(f"returned cached response for url: {method} {url}")
                 if (datetime.datetime.now() - timestamp).total_seconds() < 15:
                     return resp
+
+                # remove from cache if more than 15 seconds have passed
+                self._cache.pop(f"{method} {url}")
 
         match method:
             case "GET":
