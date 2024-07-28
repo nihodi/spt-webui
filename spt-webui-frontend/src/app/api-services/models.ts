@@ -78,7 +78,11 @@ export interface PlaybackState {
 
 }
 
+export interface TrackObjectWithQueue extends TrackObject {
+	is_in_queue: boolean;
+}
+
 export interface SpotifyQueue {
 	currently_playing: TrackObject | null;
-	queue: TrackObject[];
+	queue: TrackObjectWithQueue[];
 }
