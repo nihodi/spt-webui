@@ -48,8 +48,11 @@ class Spotify:
         )
         resp.raise_for_status()
 
-        # remove queue cache
-        self._cache.pop("GET https://api.spotify.com/v1/me/player/queue")
+        # try to remove queue cache because it just changed
+        try:
+            self._cache.pop("GET https://api.spotify.com/v1/me/player/queue")
+        except KeyError:
+            pass
 
     def _do_request(self, method: Literal["GET", "POST"], url: str, can_cache: bool = True,
                     **kwargs) -> requests.Response:
