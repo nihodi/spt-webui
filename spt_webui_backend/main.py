@@ -1,7 +1,9 @@
-from typing import Optional
+from typing import Optional, Annotated
 import datetime
 
 import fastapi
+from fastapi import Query
+from fastapi.openapi.models import Example
 from fastapi.responses import JSONResponse
 import urllib.parse
 
@@ -72,10 +74,22 @@ def get_spotify_playback_state():
     return state
 
 
-# TODO: VALIDATE URL!!
 @app.post("/playback/queue")
 def add_spotify_queue_item(
-        url: str
+        url: Annotated[
+            str,
+            Query(
+                pattern=r"https://open.spotify.com/track/[a-zA-Z0-9]+",
+                title="Spotify song URL",
+                description="A link to a Spotify song.",
+                openapi_examples={
+                    "たぶん by YOASOBI": {
+                        "value": "https://open.spotify.com/track/398dL22bDbKbAmiOnPaq7o",
+                        "description": "Spotify song URL for たぶん by YOASOBI.",
+                    }
+                }
+            )
+        ]
 ):
     session = oauth2.get_oauth_session()
     track_id = spotify.get_track_id_from_shared_url(url)
