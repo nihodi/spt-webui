@@ -1,6 +1,6 @@
 import datetime
 import urllib.parse
-from typing import Dict, Tuple, Optional, Literal
+from typing import Dict, Tuple, Optional, Literal, List
 
 import requests
 from requests_oauthlib import OAuth2Session
@@ -19,9 +19,10 @@ def get_track_id_from_shared_url(
 
 
 class Spotify:
-    _cache: Dict[str, Tuple[requests.Response, datetime.datetime]] = {}
-
     def __init__(self, session: Optional[OAuth2Session] = None):
+        self._recently_requested_songs: List[Tuple[str, datetime.datetime]] = []
+        self._cache: Dict[str, Tuple[requests.Response, datetime.datetime]] = {}
+
         if not session:
             self.session = oauth2.get_oauth_session()
         else:
@@ -38,7 +39,28 @@ class Spotify:
         return schemas.SpotifyUser.model_validate(self._do_request("GET", "https://api.spotify.com/v1/me").json())
 
     def get_playback_queue(self):
-        return self._do_request("GET", "https://api.spotify.com/v1/me/player/queue").json()
+        resp = self._do_request("GET", "https://api.spotify.com/v1/me/player/queue").json()
+
+        for track in resp["queue"]:
+            track["is_in_queue"] = False
+
+        matching_index = 0
+        print(self._recently_requested_songs)
+
+        # FIXME: kinda does not work if the same song is in the queue multiple times i think
+        for i, track in enumerate(resp["queue"]):
+            matching_recent_songs = [tr for tr in self._recently_requested_songs if tr[0] == track["uri"]]
+            if len(matching_recent_songs) > 0:
+                track["is_in_queue"] = True
+            else:
+                break
+
+            matching_index = i
+
+        # remove songs no longer in the queue
+        self._recently_requested_songs = self._recently_requested_songs[len(self._recently_requested_songs) - matching_index:]
+
+        return resp
 
     def add_track_to_queue(self, uri: str):
         resp = self._do_request(
@@ -47,6 +69,8 @@ class Spotify:
             False
         )
         resp.raise_for_status()
+
+        self._recently_requested_songs.append((uri, datetime.datetime.now()))
 
         # try to remove queue cache because it just changed
         try:
