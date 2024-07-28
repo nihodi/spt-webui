@@ -14,10 +14,7 @@ from spt_webui_backend.schemas import AccessToken
 app = fastapi.FastAPI()
 
 # TODO: maybe refactor into a FastAPI dependency
-try:
-    Spotify = spotify.Spotify()
-except Exception as e:
-    pass
+Spotify = spotify.Spotify()
 
 
 @app.get("/auth/callback")

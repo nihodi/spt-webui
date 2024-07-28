@@ -48,6 +48,7 @@ def get_oauth_session(token: Optional[schemas.AccessToken] = None) -> requests_o
     )
     # if token is about to expire, request a new one
     if (token.expires_at - datetime.now()).total_seconds() < 300:
+        print("refreshing token")
         resp = requests.post(
             "https://accounts.spotify.com/api/token",
             data={
@@ -59,6 +60,8 @@ def get_oauth_session(token: Optional[schemas.AccessToken] = None) -> requests_o
             },
             auth=(ENVIRONMENT.spotify_client_id, ENVIRONMENT.spotify_client_secret)
         )
+        resp.raise_for_status()
+
         access_token = resp.json()
         expires = datetime.now() + timedelta(seconds=access_token["expires_in"])
 
