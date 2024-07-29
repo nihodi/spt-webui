@@ -1,7 +1,7 @@
 <div class="center">
 	@if (playbackState.isPlaying$ | async) {
 		<section>
-			<h1>Currently playing</h1>
+			<h1>Currently listening to</h1>
 			<app-track-card [track]="(playbackState.playbackState$ | async)?.item!"></app-track-card>
 		</section>
 
