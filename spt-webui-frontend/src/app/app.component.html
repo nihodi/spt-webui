@@ -1,14 +1,1 @@
-@if((playbackState.playbackState$ | async) !== null) {
-	<app-track-card [track]="(playbackState.playbackState$ | async)?.item!"></app-track-card>
-}
-
-
-<form [formGroup]="addToQueueForm" (ngSubmit)="addToQueue($event)">
-	<input type="text" [formControl]="addToQueueForm.controls.url">
-	<button type="submit" [disabled]="!addToQueueForm.valid">Add to queue</button>
-</form>
-
-<h1>Current queue:</h1>
-@if ((playbackState.queue$ | async)?.queue !== undefined) {
-	<app-track-list [tracks]="(playbackState.queue$ | async)?.queue!"></app-track-list>
-}
+<router-outlet></router-outlet>
