@@ -74,9 +74,16 @@ button
 	background-color: lime
 	border: none
 
+	&:hover
+		background-color: darken(lime, 10%)
+
+	&:active
+		background-color: darken(lime, 25%)
+
 	&:disabled
 		cursor: not-allowed
 		background-color: darken(lime, 25%)
+
 
 form.request-form
 	display: flex
