@@ -1,28 +1,37 @@
 <div class="center">
-	@if ((playbackState.playbackState$ | async) !== null) {
+	@if (playbackState.isPlaying$ | async) {
 		<section>
 			<h1>Currently playing</h1>
 			<app-track-card [track]="(playbackState.playbackState$ | async)?.item!"></app-track-card>
 		</section>
-	}
 
 
-	<section>
-		<h1>Submit songs</h1>
+		<section>
+			<h1>Submit songs</h1>
 
-		@if (authService.isLoggedIn$ | async) {
-			<form class="request-form" [formGroup]="addToQueueForm" (ngSubmit)="addToQueue($event)">
-				<input placeholder="Song link" type="text" [formControl]="addToQueueForm.controls.url">
-				<button type="submit" [disabled]="!addToQueueForm.valid">Add to queue</button>
-			</form>
-		} @else {
-			<p>You need to be logged in to request songs!</p>
-		}
-	</section>
+			@if (authService.isLoggedIn$ | async) {
+				<form class="request-form" [formGroup]="addToQueueForm" (ngSubmit)="addToQueue($event)">
+					<input placeholder="Song link" type="text" [formControl]="addToQueueForm.controls.url">
+					<button type="submit" [disabled]="!addToQueueForm.valid">Add to queue</button>
+				</form>
+			} @else {
+				<p>You need to be logged in to request songs!</p>
+			}
+		</section>
 
 
-	<h1>Current queue:</h1>
-	@if ((playbackState.queue$ | async)?.queue !== undefined) {
-		<app-track-list [tracks]="(playbackState.queue$ | async)?.queue!"></app-track-list>
+		<section>
+			<h1>Current queue:</h1>
+			@if ((playbackState.queue$ | async)?.queue !== undefined) {
+				<app-track-list [tracks]="(playbackState.queue$ | async)?.queue!"></app-track-list>
+			}
+		</section>
+
+	} @else {
+		<section>
+			<h1>Not online :(</h1>
+
+			<h3>No songs can be submitted, because I'm offline on Spotify.</h3>
+		</section>
 	}
 </div>

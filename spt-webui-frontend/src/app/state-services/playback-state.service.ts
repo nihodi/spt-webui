@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { SptWebUiApiWrapperService } from "../api-services/spt-web-ui-api-wrapper.service";
-import { BehaviorSubject } from "rxjs";
+import { BehaviorSubject, map } from "rxjs";
 import { PlaybackState, SpotifyQueue } from "../api-services/models";
 
 @Injectable({
@@ -13,6 +13,8 @@ export class PlaybackStateService {
 
 	private _spotifyQueue: BehaviorSubject<SpotifyQueue | null> = new BehaviorSubject<SpotifyQueue | null>(null);
 	queue$ = this._spotifyQueue.asObservable();
+
+	isPlaying$ = this._playbackState.pipe(map(v => v !== null));
 
 	private isUpdatingState: null | number = null;
 
