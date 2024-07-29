@@ -19,6 +19,8 @@ class Settings(BaseSettings):
 
     secret_key: str
 
+    frontend_url: str = "http://localhost:4200"
+
     class Config:
         env_file = ".env"
 

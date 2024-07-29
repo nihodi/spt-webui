@@ -120,7 +120,7 @@ def spotify_auth_callback(
     request.session["user_id"] = user.id
 
     # todo: make this an env variable
-    return fastapi.responses.RedirectResponse("http://localhost:4200")
+    return fastapi.responses.RedirectResponse(ENVIRONMENT.frontend_url)
 
 
 @app.get(
