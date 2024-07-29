@@ -21,6 +21,10 @@ class Settings(BaseSettings):
 
     frontend_url: str = "http://localhost:4200"
 
+    allowed_origin: str = "http://localhost:4200"
+
+    api_prefix: str = ""
+
     class Config:
         env_file = ".env"
 

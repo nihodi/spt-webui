@@ -4,9 +4,10 @@ from typing import Optional, Annotated
 
 import fastapi
 import requests_oauthlib
-from fastapi import Query
+from fastapi import Query, APIRouter
 from fastapi.responses import JSONResponse
 from starlette.middleware import Middleware
+from starlette.middleware.cors import CORSMiddleware
 from starlette.middleware.sessions import SessionMiddleware
 from starlette.requests import Request
 
@@ -21,15 +22,22 @@ middleware = [
         SessionMiddleware,
         secret_key=ENVIRONMENT.secret_key,
         session_cookie="spt-webui-session"
+    ),
+    Middleware(
+        CORSMiddleware,
+        allow_methods=["*"],
+        allow_headers=["*"], allow_credentials=True,
+        allow_origins=[ENVIRONMENT.allowed_origin]
     )
 ]
 app = fastapi.FastAPI(middleware=middleware)
+router = APIRouter()
 
 # TODO: maybe refactor into a FastAPI dependency
 Spotify = spotify.Spotify()
 
 
-@app.get("/auth/callback")
+@router.get("/auth/callback")
 def spotify_auth_callback(
         code: Optional[str] = None,
         error: Optional[str] = None,
@@ -63,7 +71,7 @@ def spotify_auth_callback(
     Spotify = spotify.Spotify()
 
 
-@app.get("/auth/setup")
+@router.get("/auth/setup")
 def spotify_auth_setup():
     return fastapi.responses.RedirectResponse("https://accounts.spotify.com/authorize?" + urllib.parse.urlencode({
         "client_id": ENVIRONMENT.spotify_client_id,
@@ -73,7 +81,7 @@ def spotify_auth_setup():
     }))
 
 
-@app.get("/auth/setup/discord", status_code=fastapi.status.HTTP_307_TEMPORARY_REDIRECT)
+@router.get("/auth/setup/discord", status_code=fastapi.status.HTTP_307_TEMPORARY_REDIRECT)
 def discord_login_redirect():
     return fastapi.responses.RedirectResponse("https://discord.com/oauth2/authorize?" + urllib.parse.urlencode({
         "client_id": ENVIRONMENT.discord_client_id,
@@ -84,7 +92,7 @@ def discord_login_redirect():
     }))
 
 
-@app.get("/auth/callback/discord")
+@router.get("/auth/callback/discord")
 def spotify_auth_callback(
         request: Request,
         code: Optional[str] = None,
@@ -123,7 +131,7 @@ def spotify_auth_callback(
     return fastapi.responses.RedirectResponse(ENVIRONMENT.frontend_url)
 
 
-@app.get(
+@router.get(
     "/users/me",
     responses={
         200: {
@@ -139,14 +147,14 @@ def get_current_user(
     return user
 
 
-@app.post("/logout")
+@router.post("/logout")
 def logout(
         request: Request
 ):
     request.session.clear()
 
 
-@app.get(
+@router.get(
     "/playback/state",
     responses={200: {}, 204: {"model": None, "description": "Playback not available or active"}}
 )
@@ -157,7 +165,7 @@ def get_spotify_playback_state():
     return state
 
 
-@app.post("/playback/queue", responses={200: {"model": None}, 401: security.HTTP_401})
+@router.post("/playback/queue", responses={200: {"model": None}, 401: security.HTTP_401})
 def add_spotify_queue_item(
         url: Annotated[
             str,
@@ -181,6 +189,9 @@ def add_spotify_queue_item(
     Spotify.add_track_to_queue(f"spotify:track:{track_id}")
 
 
-@app.get("/playback/queue")
+@router.get("/playback/queue")
 def get_spotify_playback_queue():
     return Spotify.get_playback_queue()
+
+
+app.include_router(router, prefix=ENVIRONMENT.api_prefix)
