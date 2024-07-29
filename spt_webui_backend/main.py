@@ -6,8 +6,11 @@ import fastapi
 import requests_oauthlib
 from fastapi import Query
 from fastapi.responses import JSONResponse
+from starlette.middleware import Middleware
+from starlette.middleware.sessions import SessionMiddleware
+from starlette.requests import Request
 
-from spt_webui_backend import oauth2, spotify
+from spt_webui_backend import oauth2, spotify, security
 from spt_webui_backend.environment import ENVIRONMENT
 from spt_webui_backend.schemas import AccessToken
 
@@ -15,7 +18,10 @@ import spt_webui_backend.database as database
 import spt_webui_backend.database.crud
 import spt_webui_backend.database.models
 
-app = fastapi.FastAPI()
+middleware = [
+    Middleware(SessionMiddleware, secret_key=ENVIRONMENT.secret_key, session_cookie="spt-webui-session")
+]
+app = fastapi.FastAPI(middleware=middleware)
 
 # TODO: maybe refactor into a FastAPI dependency
 Spotify = spotify.Spotify()
@@ -78,6 +84,7 @@ def discord_login_redirect():
 
 @app.get("/auth/callback/discord")
 def spotify_auth_callback(
+        request: Request,
         code: Optional[str] = None,
         error: Optional[str] = None,
 ):
@@ -108,12 +115,26 @@ def spotify_auth_callback(
         user = database.models.User(discord_user_id=discord_id, discord_display_name=username)
         user = database.crud.create_user_if_not_exists(db, user)
 
+    request.session["user_id"] = user.id
+
     return user
 
 
-@app.get("/playback/state",
-         responses={200: {}, 204: {"model": None, "description": "Playback not available or active"}})
-def get_spotify_playback_state():
+@app.post("/logout")
+def logout(
+        request: Request
+):
+    request.session.clear()
+
+
+@app.get(
+    "/playback/state",
+    responses={200: {}, 204: {"model": None, "description": "Playback not available or active"}}
+)
+def get_spotify_playback_state(
+        user: database.models.User = fastapi.Depends(security.get_current_user)
+):
+    print(user.__dict__)
     state = Spotify.get_playback_state()
     if state is None:
         return JSONResponse(None, 204)

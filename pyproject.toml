@@ -14,6 +14,7 @@ requests-oauthlib = "^2.0.0"
 sqlalchemy = "^2.0.31"
 pymysql = "^1.1.1"
 alembic = "^1.13.2"
+itsdangerous = "^2.2.0"
 
 
 [build-system]

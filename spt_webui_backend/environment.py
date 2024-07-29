@@ -17,6 +17,8 @@ class Settings(BaseSettings):
 
     discord_redirect_uri: str = "http://localhost:8000/auth/callback/discord"
 
+    secret_key: str
+
     class Config:
         env_file = ".env"
 

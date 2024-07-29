@@ -32,3 +32,7 @@ def create_user_if_not_exists(db: Session, user: models.User):
         return existing_user
 
     return create_user(db, user)
+
+
+def get_user_by_id(db: Session, user_id: int):
+    return db.get(models.User, user_id)
