@@ -174,8 +174,9 @@ def add_spotify_queue_item(
             )
         ],
 
-        _user: database.models.User = fastapi.Depends(security.get_current_user),
+        user: database.models.User = fastapi.Depends(security.get_current_user),
 ):
+    print(f"User {user.discord_display_name} requested the song {url}")
     track_id = spotify.get_track_id_from_shared_url(url)
     Spotify.add_track_to_queue(f"spotify:track:{track_id}")
 
