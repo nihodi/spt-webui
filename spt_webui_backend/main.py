@@ -6,18 +6,25 @@ import fastapi
 import requests_oauthlib
 from fastapi import Query
 from fastapi.responses import JSONResponse
+from starlette.middleware import Middleware
+from starlette.middleware.sessions import SessionMiddleware
+from starlette.requests import Request
 
-from spt_webui_backend import oauth2, spotify
+from spt_webui_backend import oauth2, spotify, security, schemas
 from spt_webui_backend.environment import ENVIRONMENT
 from spt_webui_backend.schemas import AccessToken
 
-app = fastapi.FastAPI()
+import spt_webui_backend.database as database
+import spt_webui_backend.database.crud
+import spt_webui_backend.database.models
+
+middleware = [
+    Middleware(SessionMiddleware, secret_key=ENVIRONMENT.secret_key, session_cookie="spt-webui-session")
+]
+app = fastapi.FastAPI(middleware=middleware)
 
 # TODO: maybe refactor into a FastAPI dependency
-try:
-    Spotify = spotify.Spotify()
-except Exception as e:
-    pass
+Spotify = spotify.Spotify()
 
 
 @app.get("/auth/callback")
@@ -64,7 +71,82 @@ def spotify_auth_setup():
     }))
 
 
-@app.get("/playback/state", responses={200: {}, 204: {"model": None, "description": "Playback not available or active"}})
+@app.get("/auth/setup/discord", status_code=fastapi.status.HTTP_307_TEMPORARY_REDIRECT)
+def discord_login_redirect():
+    return fastapi.responses.RedirectResponse("https://discord.com/oauth2/authorize?" + urllib.parse.urlencode({
+        "client_id": ENVIRONMENT.discord_client_id,
+        "response_type": "code",
+        "redirect_uri": ENVIRONMENT.discord_redirect_uri,
+        "scope": "identify",
+        "prompt": "none"
+    }))
+
+
+@app.get("/auth/callback/discord")
+def spotify_auth_callback(
+        request: Request,
+        code: Optional[str] = None,
+        error: Optional[str] = None,
+):
+    if code is None:
+        raise fastapi.HTTPException(status_code=401, detail=error)
+
+    session = requests_oauthlib.OAuth2Session(
+        ENVIRONMENT.discord_client_id,
+        redirect_uri=ENVIRONMENT.discord_redirect_uri,
+        scope="identify",
+    )
+
+    session.fetch_token(
+        "https://discord.com/api/oauth2/token",
+        code=code,
+        client_secret=ENVIRONMENT.discord_client_secret
+    )
+
+    resp = session.get("https://discord.com/api/v10/users/@me")
+    resp.raise_for_status()
+
+    discord_user = resp.json()
+    # get their display name, and if it is not set, get their username
+    discord_id = int(discord_user["id"])
+    username = discord_user.get("global_name") or discord_user["username"]
+
+    with database.SessionLocal() as db:
+        user = database.models.User(discord_user_id=discord_id, discord_display_name=username)
+        user = database.crud.create_user_if_not_exists(db, user)
+
+    request.session["user_id"] = user.id
+
+    return user
+
+
+@app.get(
+    "/users/me",
+    responses={
+        200: {
+            "model": schemas.User
+        },
+        401: security.HTTP_401
+    }
+
+)
+def get_current_user(
+        user: database.models.User = fastapi.Depends(security.get_current_user)
+):
+    return user
+
+
+@app.post("/logout")
+def logout(
+        request: Request
+):
+    request.session.clear()
+
+
+@app.get(
+    "/playback/state",
+    responses={200: {}, 204: {"model": None, "description": "Playback not available or active"}}
+)
 def get_spotify_playback_state():
     state = Spotify.get_playback_state()
     if state is None:
@@ -72,7 +154,7 @@ def get_spotify_playback_state():
     return state
 
 
-@app.post("/playback/queue")
+@app.post("/playback/queue", responses={200: {"model": None}, 401: security.HTTP_401})
 def add_spotify_queue_item(
         url: Annotated[
             str,
@@ -87,7 +169,9 @@ def add_spotify_queue_item(
                     }
                 }
             )
-        ]
+        ],
+
+        _user: database.models.User = fastapi.Depends(security.get_current_user),
 ):
     track_id = spotify.get_track_id_from_shared_url(url)
     Spotify.add_track_to_queue(f"spotify:track:{track_id}")

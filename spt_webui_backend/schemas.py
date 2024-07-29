@@ -12,3 +12,9 @@ class AccessToken(BaseModel):
 
 class SpotifyUser(BaseModel):
     id: str
+
+
+class User(BaseModel):
+    id: int
+    discord_user_id: int
+    discord_display_name: str
