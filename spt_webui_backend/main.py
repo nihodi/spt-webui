@@ -10,7 +10,7 @@ from starlette.middleware import Middleware
 from starlette.middleware.sessions import SessionMiddleware
 from starlette.requests import Request
 
-from spt_webui_backend import oauth2, spotify, security
+from spt_webui_backend import oauth2, spotify, security, schemas
 from spt_webui_backend.environment import ENVIRONMENT
 from spt_webui_backend.schemas import AccessToken
 
@@ -120,6 +120,22 @@ def spotify_auth_callback(
     return user
 
 
+@app.get(
+    "/users/me",
+    responses={
+        200: {
+            "model": schemas.User
+        },
+        401: security.HTTP_401
+    }
+
+)
+def get_current_user(
+        user: database.models.User = fastapi.Depends(security.get_current_user)
+):
+    return user
+
+
 @app.post("/logout")
 def logout(
         request: Request
@@ -131,17 +147,14 @@ def logout(
     "/playback/state",
     responses={200: {}, 204: {"model": None, "description": "Playback not available or active"}}
 )
-def get_spotify_playback_state(
-        user: database.models.User = fastapi.Depends(security.get_current_user)
-):
-    print(user.__dict__)
+def get_spotify_playback_state():
     state = Spotify.get_playback_state()
     if state is None:
         return JSONResponse(None, 204)
     return state
 
 
-@app.post("/playback/queue")
+@app.post("/playback/queue", responses={200: {"model": None}, 401: security.HTTP_401})
 def add_spotify_queue_item(
         url: Annotated[
             str,
@@ -156,7 +169,9 @@ def add_spotify_queue_item(
                     }
                 }
             )
-        ]
+        ],
+
+        _user: database.models.User = fastapi.Depends(security.get_current_user),
 ):
     track_id = spotify.get_track_id_from_shared_url(url)
     Spotify.add_track_to_queue(f"spotify:track:{track_id}")
