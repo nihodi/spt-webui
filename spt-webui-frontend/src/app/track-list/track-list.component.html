@@ -1,6 +1,29 @@
-<ul>
-	@for (track of tracks(); track track.id) {
-		<li>{{ track.name }}</li>
-	}
-</ul>
+<table>
+	<tr>
+		<th>#</th>
+		<th>Title & Artist</th>
+		<th>Length</th>
+	</tr>
 
+	@for (track of tracks(); track $index; ) {
+		<tr>
+			<td>{{ $index + 1 }}</td>
+			<td class="title-and-artist">
+				<img [src]="track.album.images.at(track.album.images.length - 1)?.url" alt="Album cover">
+
+				<div>
+					<div class="track-name">{{ track.name }}</div>
+					<div class="track-artists">
+						@for (artist of track.artists; track artist.id) {
+							{{ artist.name }}@if (!$last) {
+								,
+							}
+						}
+					</div>
+				</div>
+			</td>
+
+			<td>{{millisecondsToTimeString(track.duration_ms) }}</td>
+		</tr>
+	}
+</table>

@@ -38,7 +38,7 @@ const matchesSpotifyUrl: ValidatorFn = (control: AbstractControl): ValidationErr
 		TrackListComponent
 	],
   templateUrl: './index.component.html',
-  styleUrl: './index.component.scss'
+  styleUrl: './index.component.sass'
 })
 export class IndexComponent {
 	constructor(

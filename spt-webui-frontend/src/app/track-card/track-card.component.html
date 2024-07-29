@@ -1,9 +1,16 @@
-<div>
+<div class="card">
+	<div class="card-blur">
+		<img [src]="track().album.images.at(0)?.url" alt="Album cover">
+	</div>
+
 	<img [src]="track().album.images.at(0)?.url" alt="Album cover">
-	<p>{{ track().name }}</p>
-	<ul>
-		@for (artist of track().artists; track artist.id) {
-			<li>{{ artist.name }}</li>
-		}
-	</ul>
+
+	<div class="track-info">
+		<div class="track-name">{{ track().name }}</div>
+		<div class="track-artists">
+			@for(artist of track().artists; track artist.id) {
+				{{ artist.name }}@if (!$last) {, }
+			}
+		</div>
+	</div>
 </div>
