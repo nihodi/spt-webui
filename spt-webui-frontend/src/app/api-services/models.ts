@@ -86,3 +86,10 @@ export interface SpotifyQueue {
 	currently_playing: TrackObject | null;
 	queue: TrackObjectWithQueue[];
 }
+
+export interface UserData {
+	id: number;
+	discord_user_id: number;
+
+	discord_display_name: string;
+}
