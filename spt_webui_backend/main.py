@@ -12,7 +12,8 @@ from spt_webui_backend.environment import ENVIRONMENT
 from spt_webui_backend.schemas import AccessToken
 
 import spt_webui_backend.database as database
-
+import spt_webui_backend.database.crud
+import spt_webui_backend.database.models
 
 app = fastapi.FastAPI()
 
@@ -64,7 +65,54 @@ def spotify_auth_setup():
     }))
 
 
-@app.get("/playback/state", responses={200: {}, 204: {"model": None, "description": "Playback not available or active"}})
+@app.get("/auth/setup/discord", status_code=fastapi.status.HTTP_307_TEMPORARY_REDIRECT)
+def discord_login_redirect():
+    return fastapi.responses.RedirectResponse("https://discord.com/oauth2/authorize?" + urllib.parse.urlencode({
+        "client_id": ENVIRONMENT.discord_client_id,
+        "response_type": "code",
+        "redirect_uri": ENVIRONMENT.discord_redirect_uri,
+        "scope": "identify",
+        "prompt": "none"
+    }))
+
+
+@app.get("/auth/callback/discord")
+def spotify_auth_callback(
+        code: Optional[str] = None,
+        error: Optional[str] = None,
+):
+    if code is None:
+        raise fastapi.HTTPException(status_code=401, detail=error)
+
+    session = requests_oauthlib.OAuth2Session(
+        ENVIRONMENT.discord_client_id,
+        redirect_uri=ENVIRONMENT.discord_redirect_uri,
+        scope="identify",
+    )
+
+    session.fetch_token(
+        "https://discord.com/api/oauth2/token",
+        code=code,
+        client_secret=ENVIRONMENT.discord_client_secret
+    )
+
+    resp = session.get("https://discord.com/api/v10/users/@me")
+    resp.raise_for_status()
+
+    discord_user = resp.json()
+    # get their display name, and if it is not set, get their username
+    discord_id = int(discord_user["id"])
+    username = discord_user.get("global_name") or discord_user["username"]
+
+    with database.SessionLocal() as db:
+        user = database.models.User(discord_user_id=discord_id, discord_display_name=username)
+        user = database.crud.create_user_if_not_exists(db, user)
+
+    return user
+
+
+@app.get("/playback/state",
+         responses={200: {}, 204: {"model": None, "description": "Playback not available or active"}})
 def get_spotify_playback_state():
     state = Spotify.get_playback_state()
     if state is None:

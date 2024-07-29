@@ -12,6 +12,11 @@ class Settings(BaseSettings):
     database_user: str
     database_password: str
 
+    discord_client_id: str
+    discord_client_secret: str
+
+    discord_redirect_uri: str = "http://localhost:8000/auth/callback/discord"
+
     class Config:
         env_file = ".env"
 
