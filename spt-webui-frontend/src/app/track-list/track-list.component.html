@@ -12,10 +12,10 @@
 				<img [src]="track.album.images.at(track.album.images.length - 1)?.url" alt="Album cover">
 
 				<div>
-					<div class="track-name">{{ track.name }}</div>
+					<a class="track-name" [href]="track.external_urls.spotify">{{ track.name }}</a>
 					<div class="track-artists">
 						@for (artist of track.artists; track artist.id) {
-							{{ artist.name }}@if (!$last) {
+							<a [href]="artist.external_urls.spotify">{{ artist.name }}</a>@if (!$last) {
 								,
 							}
 						}
