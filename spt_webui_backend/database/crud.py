@@ -20,7 +20,6 @@ def get_user_by_discord_id(db: Session, discord_id: int) -> Optional[models.User
 def create_user_if_not_exists(db: Session, user: models.User):
     existing_user = get_user_by_discord_id(db, user.discord_user_id)
 
-    # todo: update user's discord_display_name
     if existing_user:
         if existing_user.discord_display_name != user.discord_display_name:
             db.execute(
