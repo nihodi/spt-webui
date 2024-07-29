@@ -10,16 +10,18 @@ from starlette.middleware import Middleware
 from starlette.middleware.sessions import SessionMiddleware
 from starlette.requests import Request
 
+import spt_webui_backend.database as database
+import spt_webui_backend.database.crud
 from spt_webui_backend import oauth2, spotify, security, schemas
 from spt_webui_backend.environment import ENVIRONMENT
 from spt_webui_backend.schemas import AccessToken
 
-import spt_webui_backend.database as database
-import spt_webui_backend.database.crud
-import spt_webui_backend.database.models
-
 middleware = [
-    Middleware(SessionMiddleware, secret_key=ENVIRONMENT.secret_key, session_cookie="spt-webui-session")
+    Middleware(
+        SessionMiddleware,
+        secret_key=ENVIRONMENT.secret_key,
+        session_cookie="spt-webui-session"
+    )
 ]
 app = fastapi.FastAPI(middleware=middleware)
 
