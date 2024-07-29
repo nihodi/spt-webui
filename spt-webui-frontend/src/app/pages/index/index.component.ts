@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, signal } from '@angular/core';
 import {
 	AbstractControl,
 	FormBuilder,
@@ -15,6 +15,7 @@ import { TrackCardComponent } from "../../track-card/track-card.component";
 import { AsyncPipe } from "@angular/common";
 import { TrackListComponent } from "../../track-list/track-list.component";
 import { AuthService } from "../../state-services/auth.service";
+import { Subscription } from "rxjs";
 
 const matchesSpotifyUrl: ValidatorFn = (control: AbstractControl): ValidationErrors | null => {
 	const regex = /https:\/\/open.spotify.com\/track\/[a-zA-Z0-9]+/g;
@@ -50,7 +51,18 @@ export class IndexComponent {
 		this.addToQueueForm = this.fb.group({
 			url: ['', [Validators.required, matchesSpotifyUrl]]
 		});
+
+		this.rateLimitTimerSubscription = this.playbackState.rateLimitCountdown$.subscribe({
+			next: value => {
+				if (value !== null)
+					this.addToQueueForm.disable();
+				else
+					this.addToQueueForm.enable();
+			}
+		});
 	}
+
+	rateLimitTimerSubscription: Subscription;
 
 	addToQueueForm: FormGroup<{ url: FormControl<string | null> }>;
 
@@ -67,7 +79,8 @@ export class IndexComponent {
 				}, 10);
 
 				this.addToQueueForm.reset();
-				this.addToQueueForm.enable();
+
+				this.playbackState.addedSongToQueue();
 			}, error: (err: HttpErrorResponse) => {
 				this.addToQueueForm.enable();
 			}

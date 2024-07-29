@@ -12,7 +12,14 @@
 			@if (authService.isLoggedIn$ | async) {
 				<form class="request-form" [formGroup]="addToQueueForm" (ngSubmit)="addToQueue($event)">
 					<input placeholder="Song link" type="text" [formControl]="addToQueueForm.controls.url">
-					<button type="submit" [disabled]="!addToQueueForm.valid">Add to queue</button>
+					<button type="submit" [disabled]="!addToQueueForm.valid">
+						@if (playbackState.rateLimitCountdown$ | async) {
+							{{ playbackState.rateLimitCountdown$ | async }}
+						} @else {
+							Add to queue
+						}
+
+					</button>
 				</form>
 			} @else {
 				<p>You need to be logged in to submit songs!</p>

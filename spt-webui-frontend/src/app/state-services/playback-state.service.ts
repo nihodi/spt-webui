@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { SptWebUiApiWrapperService } from "../api-services/spt-web-ui-api-wrapper.service";
-import { BehaviorSubject, map } from "rxjs";
+import { BehaviorSubject, interval, map, Subscription } from "rxjs";
 import { PlaybackState, SpotifyQueue } from "../api-services/models";
 
 @Injectable({
@@ -15,6 +15,11 @@ export class PlaybackStateService {
 	queue$ = this._spotifyQueue.asObservable();
 
 	isPlaying$ = this._playbackState.pipe(map(v => v !== null));
+
+	private rateLimitCountDownSource: BehaviorSubject<number | null> = new BehaviorSubject<number | null>(null);
+	private decreaseSecondsLeftSubscription: Subscription | null = null;
+
+	rateLimitCountdown$ = this.rateLimitCountDownSource.asObservable();
 
 	private isUpdatingState: null | number = null;
 
@@ -64,5 +69,23 @@ export class PlaybackStateService {
 		this.isUpdatingState = setTimeout(() => {
 			this.updatePlaybackState();
 		}, 15_000);
+	}
+
+	addedSongToQueue(): void {
+		const now = Date.now();
+		this.rateLimitCountDownSource.next(60);
+
+		this.decreaseSecondsLeftSubscription = interval(1000).subscribe({
+			next: state => {
+				this.rateLimitCountDownSource.next((this.rateLimitCountDownSource.getValue() ?? 60) - 1);
+
+				if (state === 59) {
+					this.decreaseSecondsLeftSubscription?.unsubscribe()
+					this.decreaseSecondsLeftSubscription = null;
+					this.rateLimitCountDownSource.next(null);
+				}
+
+			}
+		});
 	}
 }
