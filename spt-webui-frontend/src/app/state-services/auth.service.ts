@@ -17,6 +17,10 @@ export class AuthService {
 
 	isLoading$ = this.isLoadingSource.asObservable();
 
+	isLoggedIn(): boolean {
+		return this.userDataSource !== null;
+	}
+
 	refreshLoginState(): void {
 		if (this.isLoadingSource.getValue())
 			return;

@@ -1,14 +1,28 @@
-<p>
-	@if (isLoadingUserData$ | async) {
-		Loading...
+@if (isLoggedIn$ | async) {
+
+
+}
+
+@if (isLoadingUserData$ | async) {
+	<div class="pill loading">Loading...</div>
+} @else {
+	@if (isLoggedIn$ | async) {
+		<button class="pill"
+				(click)="this.popoverOpen.set(!this.popoverOpen())"
+		>
+			Logged in as
+			{{ (currentUserData$ | async)?.discord_display_name }}
+
+			@if (popoverOpen()) {
+				<div class="popover">
+					<button (click)="logOut()">Log out</button>
+				</div>
+			}
+		</button>
 	} @else {
-		{{ (currentUserData$ | async) | json }}
-
-
-		@if (isLoggedIn$ | async) {
-			<button (click)="logOut()">log out</button>
-		} @else {
-			<a [href]="environment.api_prefix + '/auth/setup/discord'">Log in</a>
-		}
+		<a class="pill not-logged-in" [href]="environment.api_prefix + '/auth/setup/discord'">
+			Not logged in
+		</a>
 	}
-</p>
+}
+

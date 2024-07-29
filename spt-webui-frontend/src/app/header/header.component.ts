@@ -1,8 +1,8 @@
-import { Component } from '@angular/core';
+import { Component, signal } from '@angular/core';
 import { AuthService } from "../state-services/auth.service";
 import { Observable } from "rxjs";
 import { UserData } from "../api-services/models";
-import { AsyncPipe, JsonPipe } from "@angular/common";
+import { AsyncPipe, JsonPipe, NgClass } from "@angular/common";
 import {environment} from "../../environments/environment";
 
 @Component({
@@ -10,10 +10,11 @@ import {environment} from "../../environments/environment";
   standalone: true,
 	imports: [
 		AsyncPipe,
-		JsonPipe
+		JsonPipe,
+		NgClass
 	],
   templateUrl: './header.component.html',
-  styleUrl: './header.component.scss'
+  styleUrl: './header.component.sass'
 })
 export class HeaderComponent {
 	isLoadingUserData$: Observable<boolean>;
@@ -22,8 +23,10 @@ export class HeaderComponent {
 
 	protected environment = environment;
 
+	popoverOpen = signal<boolean>(false);
+
 	constructor(
-		private authService: AuthService,
+		protected authService: AuthService,
 	) {
 		this.isLoadingUserData$ = this.authService.isLoading$;
 		this.currentUserData$ = this.authService.currentUserData$;
@@ -31,6 +34,8 @@ export class HeaderComponent {
 	}
 
 	logOut() {
+		this.popoverOpen.set(false);
+
 		this.authService.logOut().subscribe({
 			next: () => {
 
