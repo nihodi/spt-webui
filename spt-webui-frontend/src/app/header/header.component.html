@@ -1,0 +1,14 @@
+<p>
+	@if (isLoadingUserData$ | async) {
+		Loading...
+	} @else {
+		{{ (currentUserData$ | async) | json }}
+
+
+		@if (isLoggedIn$ | async) {
+			<button (click)="logOut()">log out</button>
+		} @else {
+			<a [href]="environment.api_prefix + '/auth/setup/discord'">Log in</a>
+		}
+	}
+</p>
