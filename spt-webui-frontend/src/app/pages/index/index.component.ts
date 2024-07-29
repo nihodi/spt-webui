@@ -14,6 +14,7 @@ import { HttpErrorResponse } from "@angular/common/http";
 import { TrackCardComponent } from "../../track-card/track-card.component";
 import { AsyncPipe } from "@angular/common";
 import { TrackListComponent } from "../../track-list/track-list.component";
+import { AuthService } from "../../state-services/auth.service";
 
 const matchesSpotifyUrl: ValidatorFn = (control: AbstractControl): ValidationErrors | null => {
 	const regex = /https:\/\/open.spotify.com\/track\/[a-zA-Z0-9]+/g;
@@ -43,7 +44,8 @@ export class IndexComponent {
 	constructor(
 		private fb: FormBuilder,
 		private apiWrapper: SptWebUiApiWrapperService,
-		protected playbackState: PlaybackStateService
+		protected playbackState: PlaybackStateService,
+		protected authService: AuthService
 	) {
 		this.addToQueueForm = this.fb.group({
 			url: ['', [Validators.required, matchesSpotifyUrl]]

@@ -1,12 +1,16 @@
-@if((playbackState.playbackState$ | async) !== null) {
+@if ((playbackState.playbackState$ | async) !== null) {
 	<app-track-card [track]="(playbackState.playbackState$ | async)?.item!"></app-track-card>
 }
 
 
-<form [formGroup]="addToQueueForm" (ngSubmit)="addToQueue($event)">
-	<input type="text" [formControl]="addToQueueForm.controls.url">
-	<button type="submit" [disabled]="!addToQueueForm.valid">Add to queue</button>
-</form>
+@if (authService.isLoggedIn$ | async) {
+	<form [formGroup]="addToQueueForm" (ngSubmit)="addToQueue($event)">
+		<input type="text" [formControl]="addToQueueForm.controls.url">
+		<button type="submit" [disabled]="!addToQueueForm.valid">Add to queue</button>
+	</form>
+} @else {
+	<p>You need to be logged in to request songs!</p>
+}
 
 <h1>Current queue:</h1>
 @if ((playbackState.queue$ | async)?.queue !== undefined) {
