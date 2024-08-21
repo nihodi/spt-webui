@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from "@angular/common/http";
 import { Observable } from "rxjs";
 import { environment } from "../../environments/environment";
-import { PlaybackState, SpotifyQueue } from "./models";
+import { PlaybackState, SpotifyQueue, TrackObject } from "./models";
 
 @Injectable({
 	providedIn: 'root'
@@ -23,8 +23,8 @@ export class SptWebUiApiWrapperService {
 		return this.httpClient.get<SpotifyQueue>(`${environment.api_prefix}/playback/queue`);
 	}
 
-	addSongToQueue(url: string): Observable<null> {
-		return this.httpClient.post<null>(`${environment.api_prefix}/playback/queue`, "", {
+	addSongToQueue(url: string): Observable<TrackObject> {
+		return this.httpClient.post<TrackObject>(`${environment.api_prefix}/playback/queue`, "", {
 			params: {
 				url
 			}

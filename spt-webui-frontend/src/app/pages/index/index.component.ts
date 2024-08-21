@@ -75,7 +75,7 @@ export class IndexComponent {
 		this.addToQueueForm.disable();
 
 		this.apiWrapper.addSongToQueue(url.toString()).subscribe({
-			next: () => {
+			next: (track) => {
 				setTimeout(() => {
 					this.playbackState.updatePlaybackState();
 				}, 10);
@@ -84,7 +84,7 @@ export class IndexComponent {
 				this.playbackState.addedSongToQueue();
 				this.notificationsService.addNotification({
 					type: "success",
-					message: "Added song to queue!"
+					message: `Added ${track.name} by ${track.artists[0].name} to the queue!`
 				});
 
 			}, error: (err: HttpErrorResponse) => {
