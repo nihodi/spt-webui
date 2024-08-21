@@ -31,16 +31,16 @@ const matchesSpotifyUrl: ValidatorFn = (control: AbstractControl): ValidationErr
 
 
 @Component({
-  selector: 'app-index',
-  standalone: true,
+	selector: 'app-index',
+	standalone: true,
 	imports: [
 		TrackCardComponent,
 		AsyncPipe,
 		ReactiveFormsModule,
 		TrackListComponent
 	],
-  templateUrl: './index.component.html',
-  styleUrl: './index.component.sass'
+	templateUrl: './index.component.html',
+	styleUrl: './index.component.sass'
 })
 export class IndexComponent {
 	constructor(
@@ -84,14 +84,24 @@ export class IndexComponent {
 				this.playbackState.addedSongToQueue();
 				this.notificationsService.addNotification({
 					type: "success",
-					message: `Added ${track.name} by ${track.artists[0].name} to the queue!`
+					message: `Added ${ track.name } by ${ track.artists[0].name } to the queue!`
 				});
 
 			}, error: (err: HttpErrorResponse) => {
 				this.addToQueueForm.enable();
+
+				if (err.status === 409) {
+					this.notificationsService.addNotification({
+						type: "error",
+						message: `Failed to request song. Reason: Song is already in the queue!`
+					});
+
+					return;
+				}
+
 				this.notificationsService.addNotification({
 					type: "error",
-					message: `Failed to request song. Code: ${err.status}`
+					message: `Failed to request song. Code: ${ err.status }`
 				});
 			}
 		});
