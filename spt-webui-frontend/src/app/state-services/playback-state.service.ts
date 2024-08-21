@@ -3,6 +3,7 @@ import { SptWebUiApiWrapperService } from "../api-services/spt-web-ui-api-wrappe
 import { BehaviorSubject, interval, map, retry, Subscription } from "rxjs";
 import { PlaybackState, SpotifyQueue } from "../api-services/models";
 import { HttpErrorResponse } from "@angular/common/http";
+import { NotificationsService } from "../notifications.service";
 
 @Injectable({
 	providedIn: 'root'
@@ -33,7 +34,8 @@ export class PlaybackStateService {
 	}
 
 	constructor(
-		private apiWrapper: SptWebUiApiWrapperService
+		private apiWrapper: SptWebUiApiWrapperService,
+		private notificationsService: NotificationsService
 	) {
 		this.updatePlaybackState();
 	}
@@ -53,6 +55,11 @@ export class PlaybackStateService {
 			},
 			error: (err: HttpErrorResponse) => {
 				this.schedulePlaybackStateUpdate();
+
+				this.notificationsService.addNotification({
+					type: "error",
+					message: `Failed to fetch playback state. Trying again in 15 seconds.`,
+				});
 			}
 		});
 
