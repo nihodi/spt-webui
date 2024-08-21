@@ -34,7 +34,7 @@ def set_current_token(token: schemas.AccessToken) -> None:
 def get_oauth_session(token: Optional[schemas.AccessToken] = None, force_refresh: bool = False) -> requests_oauthlib.OAuth2Session:
     if token is None:
         if not current_token:
-            raise Exception('No current token')
+            raise RuntimeError('No current token')
         token = current_token
 
     client = requests_oauthlib.OAuth2Session(

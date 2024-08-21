@@ -2,8 +2,10 @@ import datetime
 import urllib.parse
 from typing import Dict, Tuple, Optional, Literal, List
 
+import fastapi
 import requests
 from requests_oauthlib import OAuth2Session
+from starlette import status
 
 from spt_webui_backend import schemas, oauth2
 
@@ -58,7 +60,8 @@ class Spotify:
             matching_index = i
 
         # remove songs no longer in the queue
-        self._recently_requested_songs = self._recently_requested_songs[len(self._recently_requested_songs) - matching_index:]
+        self._recently_requested_songs = self._recently_requested_songs[
+                                         len(self._recently_requested_songs) - matching_index:]
 
         return resp
 
@@ -117,3 +120,12 @@ class Spotify:
 
     def _refresh_token(self):
         self.session = oauth2.get_oauth_session(force_refresh=True)
+
+
+def get_spotify_instance() -> Spotify:
+    try:
+        session = oauth2.get_oauth_session()
+    except RuntimeError:
+        raise fastapi.HTTPException(status.HTTP_503_SERVICE_UNAVAILABLE, detail="Could not get a Spotify instance")
+
+    return Spotify(session)

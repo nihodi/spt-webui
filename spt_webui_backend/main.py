@@ -33,12 +33,6 @@ middleware = [
 app = fastapi.FastAPI(middleware=middleware)
 router = APIRouter()
 
-# TODO: maybe refactor into a FastAPI dependency
-try:
-    Spotify = spotify.Spotify()
-except Exception as e:
-    pass
-
 
 @router.get("/auth/callback")
 def spotify_auth_callback(
@@ -69,9 +63,7 @@ def spotify_auth_callback(
     if user.id != ENVIRONMENT.spotify_allowed_account_id:
         raise fastapi.HTTPException(status_code=401, detail="You are not allowed here ;)")
 
-    global Spotify
     oauth2.set_current_token(token)
-    Spotify = spotify.Spotify()
 
 
 @router.get("/auth/setup")
@@ -161,8 +153,10 @@ def logout(
     "/playback/state",
     responses={200: {}, 204: {"model": None, "description": "Playback not available or active"}}
 )
-def get_spotify_playback_state():
-    state = Spotify.get_playback_state()
+def get_spotify_playback_state(
+        spotify_instance: spotify.Spotify = fastapi.Depends(spotify.get_spotify_instance)
+):
+    state = spotify_instance.get_playback_state()
     if state is None:
         return JSONResponse(None, 204)
     return state
@@ -186,15 +180,19 @@ def add_spotify_queue_item(
         ],
 
         user: database.models.User = fastapi.Depends(security.get_current_user),
+        spotify_instance: spotify.Spotify = fastapi.Depends(spotify.get_spotify_instance)
 ):
     print(f"User {user.discord_display_name} requested the song {url}")
     track_id = spotify.get_track_id_from_shared_url(url)
-    Spotify.add_track_to_queue(f"spotify:track:{track_id}")
+    spotify_instance.add_track_to_queue(f"spotify:track:{track_id}")
 
 
 @router.get("/playback/queue")
-def get_spotify_playback_queue():
-    return Spotify.get_playback_queue()
+def get_spotify_playback_queue(
+        spotify_instance: spotify.Spotify = fastapi.Depends(spotify.get_spotify_instance)
+
+):
+    return spotify_instance.get_playback_queue()
 
 
 app.include_router(router, prefix=ENVIRONMENT.api_prefix)
