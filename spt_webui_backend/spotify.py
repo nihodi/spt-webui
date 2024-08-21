@@ -71,12 +71,12 @@ class Spotify:
         return resp
 
     def add_track_to_queue(self, uri: str) -> dict:
-        track_data = self._do_request(
+        resp = self._do_request(
             "POST",
             "https://api.spotify.com/v1/me/player/queue?" + urllib.parse.urlencode({"uri": uri}),
             False
         )
-        track_data.raise_for_status()
+        resp.raise_for_status()
 
 
         track_data = self.get_track_info(uri[14:])
