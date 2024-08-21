@@ -116,4 +116,4 @@ class Spotify:
         return resp
 
     def _refresh_token(self):
-        self.session = oauth2.get_oauth_session()
+        self.session = oauth2.get_oauth_session(force_refresh=True)

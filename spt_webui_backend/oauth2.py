@@ -31,7 +31,7 @@ def set_current_token(token: schemas.AccessToken) -> None:
         print("saved token to file.")
 
 
-def get_oauth_session(token: Optional[schemas.AccessToken] = None) -> requests_oauthlib.OAuth2Session:
+def get_oauth_session(token: Optional[schemas.AccessToken] = None, force_refresh: bool = False) -> requests_oauthlib.OAuth2Session:
     if token is None:
         if not current_token:
             raise Exception('No current token')
@@ -47,7 +47,7 @@ def get_oauth_session(token: Optional[schemas.AccessToken] = None) -> requests_o
         }
     )
     # if token is about to expire, request a new one
-    if (token.expires_at - datetime.now()).total_seconds() < 300:
+    if (token.expires_at - datetime.now()).total_seconds() < 300 or force_refresh:
         print("refreshing token")
         resp = requests.post(
             "https://accounts.spotify.com/api/token",

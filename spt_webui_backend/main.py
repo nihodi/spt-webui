@@ -34,7 +34,10 @@ app = fastapi.FastAPI(middleware=middleware)
 router = APIRouter()
 
 # TODO: maybe refactor into a FastAPI dependency
-Spotify = spotify.Spotify()
+try:
+    Spotify = spotify.Spotify()
+except Exception as e:
+    pass
 
 
 @router.get("/auth/callback")
