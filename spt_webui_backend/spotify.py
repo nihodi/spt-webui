@@ -10,7 +10,7 @@ from starlette import status
 from spt_webui_backend import schemas, oauth2
 
 
-def get_track_id_from_shared_url(
+def get_track_uri_from_shared_url(
         url: str
 ):
     # should look like this
@@ -56,7 +56,7 @@ class Spotify:
 
         # FIXME: kinda does not work if the same song is in the queue multiple times i think
         for i, track in enumerate(resp["queue"]):
-            matching_recent_songs = [tr for tr in self._recently_requested_songs if tr[0] == track["uri"]]
+            matching_recent_songs = [tr for tr in self._recently_requested_songs if tr[0]["uri"] == track["uri"]]
             if len(matching_recent_songs) > 0:
                 track["is_in_queue"] = True
             else:
