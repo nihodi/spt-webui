@@ -89,6 +89,10 @@ export class IndexComponent {
 
 			}, error: (err: HttpErrorResponse) => {
 				this.addToQueueForm.enable();
+				this.notificationsService.addNotification({
+					type: "error",
+					message: `Failed to request song. Code: ${err.status}`
+				});
 			}
 		});
 	}
