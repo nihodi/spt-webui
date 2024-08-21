@@ -192,9 +192,13 @@ def add_spotify_queue_item(
         user: database.models.User = fastapi.Depends(security.get_current_user),
         spotify_instance: spotify.Spotify = fastapi.Depends(spotify.get_spotify_instance)
 ):
-    track_uri = spotify.get_track_uri_from_shared_url(url)
+    track_uri = f"spotify:track:{spotify.get_track_id_from_shared_url(url)}"
+
+    if spotify_instance.track_is_in_queue(track_uri):
+        raise fastapi.HTTPException(fastapi.status.HTTP_409_CONFLICT, detail="Song is already present in the queue.")
+
     print(f"User {user.discord_display_name} requested the song {url}")
-    return spotify_instance.add_track_to_queue(f"spotify:track:{track_uri}")
+    return spotify_instance.add_track_to_queue(f"{track_uri}")
 
 
 @router.get("/playback/queue")
