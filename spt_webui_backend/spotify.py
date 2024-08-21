@@ -51,22 +51,18 @@ class Spotify:
         for track in resp["queue"]:
             track["is_in_queue"] = False
 
-        matching_index = 0
-        print(self._recently_requested_songs)
 
-        # FIXME: kinda does not work if the same song is in the queue multiple times i think
-        for i, track in enumerate(resp["queue"]):
-            matching_recent_songs = [tr for tr in self._recently_requested_songs if tr[0]["uri"] == track["uri"]]
-            if len(matching_recent_songs) > 0:
-                track["is_in_queue"] = True
+        found_index = 0
+        new_queue = []
+        for track, time in self._recently_requested_songs:
+            if resp["queue"][found_index]["uri"] == track["uri"]:
+                new_queue.append((track, time))
+                found_index += 1
             else:
-                break
-
-            matching_index = i
+                continue
 
         # remove songs no longer in the queue
-        self._recently_requested_songs = self._recently_requested_songs[
-                                         len(self._recently_requested_songs) - matching_index:]
+        self._recently_requested_songs = new_queue
 
         return resp
 
