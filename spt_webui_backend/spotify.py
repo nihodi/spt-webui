@@ -45,6 +45,14 @@ class Spotify:
         resp.raise_for_status()
         return resp.json()
 
+    def track_is_in_queue(self, uri: str) -> bool:
+        print("hello?")
+        for track, _ in self._recently_requested_songs:
+            if track["uri"] == uri:
+                return True
+
+        return False
+
     def get_playback_queue(self):
         resp = self._do_request("GET", "https://api.spotify.com/v1/me/player/queue").json()
 
