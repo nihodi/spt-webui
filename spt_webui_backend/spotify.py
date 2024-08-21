@@ -10,7 +10,7 @@ from starlette import status
 from spt_webui_backend import schemas, oauth2
 
 
-def get_track_uri_from_shared_url(
+def get_track_id_from_shared_url(
         url: str
 ):
     # should look like this
