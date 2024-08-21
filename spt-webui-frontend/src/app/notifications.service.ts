@@ -5,6 +5,7 @@ import { BehaviorSubject } from "rxjs";
 export interface Notification {
 	type: "error" | "success" | "info";
 	message: string;
+	duration?: number;
 }
 
 
@@ -31,6 +32,6 @@ export class NotificationsService {
 			let current = this.getCurrentNotifications();
 			current.splice(0, 1);
 			this.currentNotificationsSource.next(current);
-		}, 10_000)
+		}, notification.duration ?? 5_000)
 	}
 }
