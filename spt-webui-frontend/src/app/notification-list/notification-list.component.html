@@ -1,0 +1,12 @@
+<ul>
+
+@for(notification of notificationsService.currentNotifications$ | async; track $index) {
+
+	<li [ngClass]="notification.type">
+		{{ notification.message }}
+	</li>
+
+} @empty {
+
+}
+</ul>

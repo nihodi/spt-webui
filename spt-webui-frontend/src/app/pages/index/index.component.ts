@@ -16,6 +16,7 @@ import { AsyncPipe } from "@angular/common";
 import { TrackListComponent } from "../../track-list/track-list.component";
 import { AuthService } from "../../state-services/auth.service";
 import { Subscription } from "rxjs";
+import { NotificationsService } from "../../notifications.service";
 
 const matchesSpotifyUrl: ValidatorFn = (control: AbstractControl): ValidationErrors | null => {
 	const regex = /https:\/\/open.spotify.com\/track\/[a-zA-Z0-9]+/g;
@@ -46,7 +47,8 @@ export class IndexComponent {
 		private fb: FormBuilder,
 		private apiWrapper: SptWebUiApiWrapperService,
 		protected playbackState: PlaybackStateService,
-		protected authService: AuthService
+		protected authService: AuthService,
+		private notificationsService: NotificationsService
 	) {
 		this.addToQueueForm = this.fb.group({
 			url: ['', [Validators.required, matchesSpotifyUrl]]
@@ -79,8 +81,12 @@ export class IndexComponent {
 				}, 10);
 
 				this.addToQueueForm.reset();
-
 				this.playbackState.addedSongToQueue();
+				this.notificationsService.addNotification({
+					type: "success",
+					message: "Added song to queue!"
+				});
+
 			}, error: (err: HttpErrorResponse) => {
 				this.addToQueueForm.enable();
 			}
