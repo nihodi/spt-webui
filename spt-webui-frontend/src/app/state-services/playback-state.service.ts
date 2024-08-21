@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
 import { SptWebUiApiWrapperService } from "../api-services/spt-web-ui-api-wrapper.service";
-import { BehaviorSubject, interval, map, Subscription } from "rxjs";
+import { BehaviorSubject, interval, map, retry, Subscription } from "rxjs";
 import { PlaybackState, SpotifyQueue } from "../api-services/models";
+import { HttpErrorResponse } from "@angular/common/http";
 
 @Injectable({
 	providedIn: 'root'
@@ -43,16 +44,19 @@ export class PlaybackStateService {
 
 		console.log("updating playback state.");
 
-		this.apiWrapper.getPlaybackState().subscribe({
+		this.apiWrapper.getPlaybackState().pipe(retry({delay: 1000, count: 1})).subscribe({
 			next: state => {
 				this._playbackState.next(state);
 
 				this.isUpdatingState = null;
 				this.schedulePlaybackStateUpdate();
+			},
+			error: (err: HttpErrorResponse) => {
+				this.schedulePlaybackStateUpdate();
 			}
 		});
 
-		this.apiWrapper.getQueue().subscribe({
+		this.apiWrapper.getQueue().pipe(retry({delay: 1000, count: 1})).subscribe({
 			next: state => {
 				this._spotifyQueue.next(state);
 			}
