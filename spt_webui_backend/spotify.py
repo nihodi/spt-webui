@@ -22,7 +22,7 @@ def get_track_id_from_shared_url(
 
 class Spotify:
     def __init__(self, session: Optional[OAuth2Session] = None):
-        self._recently_requested_songs: List[Tuple[str, datetime.datetime]] = []
+        self._recently_requested_songs: List[Tuple[dict, datetime.datetime]] = []
         self._cache: Dict[str, Tuple[requests.Response, datetime.datetime]] = {}
 
         if not session:
@@ -39,6 +39,11 @@ class Spotify:
 
     def get_me(self) -> schemas.SpotifyUser:
         return schemas.SpotifyUser.model_validate(self._do_request("GET", "https://api.spotify.com/v1/me").json())
+
+    def get_track_info(self, track_id: str) -> Optional[dict]:
+        resp = self._do_request("GET", f"https://api.spotify.com/v1/tracks/{track_id}")
+        resp.raise_for_status()
+        return resp.json()
 
     def get_playback_queue(self):
         resp = self._do_request("GET", "https://api.spotify.com/v1/me/player/queue").json()
@@ -65,21 +70,25 @@ class Spotify:
 
         return resp
 
-    def add_track_to_queue(self, uri: str):
-        resp = self._do_request(
+    def add_track_to_queue(self, uri: str) -> dict:
+        track_data = self._do_request(
             "POST",
             "https://api.spotify.com/v1/me/player/queue?" + urllib.parse.urlencode({"uri": uri}),
             False
         )
-        resp.raise_for_status()
+        track_data.raise_for_status()
 
-        self._recently_requested_songs.append((uri, datetime.datetime.now()))
+
+        track_data = self.get_track_info(uri[14:])
+        self._recently_requested_songs.append((track_data, datetime.datetime.now()))
 
         # try to remove queue cache because it just changed
         try:
             self._cache.pop("GET https://api.spotify.com/v1/me/player/queue")
         except KeyError:
             pass
+
+        return track_data
 
     def _do_request(self, method: Literal["GET", "POST"], url: str, can_cache: bool = True,
                     **kwargs) -> requests.Response:
@@ -122,10 +131,19 @@ class Spotify:
         self.session = oauth2.get_oauth_session(force_refresh=True)
 
 
+spotify_instance: Optional[Spotify] = None
+
+
 def get_spotify_instance() -> Spotify:
+    global spotify_instance
+
+    if spotify_instance is not None:
+        return spotify_instance
+
     try:
         session = oauth2.get_oauth_session()
     except RuntimeError:
         raise fastapi.HTTPException(status.HTTP_503_SERVICE_UNAVAILABLE, detail="Could not get a Spotify instance")
 
-    return Spotify(session)
+    spotify_instance = Spotify(session)
+    return spotify_instance

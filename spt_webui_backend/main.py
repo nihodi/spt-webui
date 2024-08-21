@@ -184,7 +184,7 @@ def add_spotify_queue_item(
 ):
     print(f"User {user.discord_display_name} requested the song {url}")
     track_id = spotify.get_track_id_from_shared_url(url)
-    spotify_instance.add_track_to_queue(f"spotify:track:{track_id}")
+    return spotify_instance.add_track_to_queue(f"spotify:track:{track_id}")
 
 
 @router.get("/playback/queue")
