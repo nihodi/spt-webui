@@ -162,7 +162,17 @@ def get_spotify_playback_state(
     return state
 
 
-@router.post("/playback/queue", responses={200: {"model": None}, 401: security.HTTP_401})
+@router.post(
+    "/playback/queue",
+    responses={
+        200: {"model": None},
+        401: security.HTTP_401,
+        409: {
+            "model": None,
+            "description": "Song is already present in the queue."
+        }
+    }
+)
 def add_spotify_queue_item(
         url: Annotated[
             str,
@@ -182,9 +192,9 @@ def add_spotify_queue_item(
         user: database.models.User = fastapi.Depends(security.get_current_user),
         spotify_instance: spotify.Spotify = fastapi.Depends(spotify.get_spotify_instance)
 ):
+    track_uri = spotify.get_track_uri_from_shared_url(url)
     print(f"User {user.discord_display_name} requested the song {url}")
-    track_id = spotify.get_track_id_from_shared_url(url)
-    return spotify_instance.add_track_to_queue(f"spotify:track:{track_id}")
+    return spotify_instance.add_track_to_queue(f"spotify:track:{track_uri}")
 
 
 @router.get("/playback/queue")
