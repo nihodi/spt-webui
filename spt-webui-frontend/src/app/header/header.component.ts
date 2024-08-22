@@ -7,15 +7,15 @@ import { environment } from "../../environments/environment";
 import { NotificationsService } from "../notifications.service";
 
 @Component({
-  selector: 'app-header',
-  standalone: true,
+	selector: 'app-header',
+	standalone: true,
 	imports: [
 		AsyncPipe,
 		JsonPipe,
 		NgClass
 	],
-  templateUrl: './header.component.html',
-  styleUrl: './header.component.sass'
+	templateUrl: './header.component.html',
+	styleUrl: './header.component.sass'
 })
 export class HeaderComponent {
 	isLoadingUserData$: Observable<boolean>;
