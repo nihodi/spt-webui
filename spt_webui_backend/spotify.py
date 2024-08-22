@@ -47,7 +47,6 @@ class Spotify:
         return resp.json()
 
     def track_is_in_queue(self, uri: str) -> bool:
-        print("hello?")
         for track, _ in self._recently_requested_songs:
             if track["uri"] == uri:
                 return True
