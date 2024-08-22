@@ -24,6 +24,7 @@ export class PlaybackStateService {
 	rateLimitCountdown$ = this.rateLimitCountDownSource.asObservable();
 
 	private isUpdatingState: null | number = null;
+	private incrementProjectedSongProgressTimer: null | number = null;
 
 	getPlaybackState(): PlaybackState | null {
 		return this._playbackState.getValue();
@@ -41,10 +42,14 @@ export class PlaybackStateService {
 	}
 
 	updatePlaybackState() {
+		console.log("updating playback state.");
+
 		if (this.isUpdatingState)
 			clearTimeout(this.isUpdatingState);
 
-		console.log("updating playback state.");
+		if (this.incrementProjectedSongProgressTimer)
+			clearInterval(this.incrementProjectedSongProgressTimer);
+
 
 		this.apiWrapper.getPlaybackState().pipe(retry({delay: 1000, count: 1})).subscribe({
 			next: state => {
@@ -52,6 +57,10 @@ export class PlaybackStateService {
 
 				this.isUpdatingState = null;
 				this.schedulePlaybackStateUpdate();
+
+				this.incrementProjectedSongProgressTimer = setInterval(() => {
+					this.incrementProjectedSongProgress();
+				}, 1000);
 			},
 			error: (err: HttpErrorResponse) => {
 				this.schedulePlaybackStateUpdate();
@@ -68,6 +77,18 @@ export class PlaybackStateService {
 				this._spotifyQueue.next(state);
 			}
 		});
+	}
+
+	private incrementProjectedSongProgress(): void {
+		let state = this.getPlaybackState();
+		if (state === null)
+			return;
+
+		state.progress_ms += 1000;
+		// clamp value to song length
+		state.progress_ms = Math.min(state.item.duration_ms, state.progress_ms);
+
+		this._playbackState.next(state);
 	}
 
 	private schedulePlaybackStateUpdate(): void {
