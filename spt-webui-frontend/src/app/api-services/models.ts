@@ -74,6 +74,12 @@ export interface PlaybackState {
 	context: SpotifyContextObject;
 	item: TrackObject;
 
+	progress_ms: number;
+	is_playing: boolean;
+
+	repeat_state: boolean;
+	shuffle_state: boolean;
+
 	currently_playing_type: "track" | "episode" | "ad" | "unknown";
 
 }
@@ -92,4 +98,14 @@ export interface UserData {
 	discord_user_id: number;
 
 	discord_display_name: string;
+}
+
+export function millisecondsToTimeString(ms: number): string {
+	const minutes = Math.floor(ms  / 60000);
+	const seconds = Math.floor((ms % 60000) / 1000);
+
+	if (seconds < 10)
+		return `${minutes}:0${seconds}`;
+	else
+		return `${minutes}:${seconds}`;
 }
