@@ -8,6 +8,7 @@ from requests_oauthlib import OAuth2Session
 from starlette import status
 
 from spt_webui_backend import schemas, oauth2
+from spt_webui_backend.schemas import SpotifyTrackObject
 
 
 def get_track_id_from_shared_url(
@@ -22,7 +23,7 @@ def get_track_id_from_shared_url(
 
 class Spotify:
     def __init__(self, session: Optional[OAuth2Session] = None):
-        self._recently_requested_songs: List[Tuple[dict, datetime.datetime]] = []
+        self._recently_requested_songs: List[Tuple[schemas.SpotifyTrackObject, datetime.datetime]] = []
         self._cache: Dict[str, Tuple[requests.Response, datetime.datetime]] = {}
 
         if not session:
@@ -30,7 +31,7 @@ class Spotify:
         else:
             self.session = session
 
-    def get_playback_state(self):
+    def get_playback_state(self) -> Optional[schemas.SpotifyPlaybackState]:
         resp = self._do_request("GET", "https://api.spotify.com/v1/me/player")
         if resp.status_code == 204:
             return None
@@ -41,28 +42,27 @@ class Spotify:
     def get_me(self) -> schemas.SpotifyUser:
         return schemas.SpotifyUser.model_validate(self._do_request("GET", "https://api.spotify.com/v1/me").json())
 
-    def get_track_info(self, track_id: str) -> Optional[dict]:
+    def get_track_info(self, track_id: str) -> Optional[SpotifyTrackObject]:
         resp = self._do_request("GET", f"https://api.spotify.com/v1/tracks/{track_id}")
         resp.raise_for_status()
-        return resp.json()
+
+        return schemas.SpotifyTrackObject.model_validate(resp.json())
 
     def track_is_in_queue(self, uri: str) -> bool:
         for track, _ in self._recently_requested_songs:
-            if track["uri"] == uri:
+            if track.uri == uri:
                 return True
 
         return False
 
-    def get_playback_queue(self):
-        resp = self._do_request("GET", "https://api.spotify.com/v1/me/player/queue").json()
-
-        for track in resp["queue"]:
-            track["is_in_queue"] = False
+    def get_playback_queue(self) -> schemas.SpotifyQueue:
+        resp = schemas.SpotifyQueue.model_validate(
+            self._do_request("GET", "https://api.spotify.com/v1/me/player/queue").json())
 
         found_index = 0
         new_queue = []
         for track, time in self._recently_requested_songs:
-            if resp["queue"][found_index]["uri"] == track["uri"]:
+            if resp.queue[found_index].uri == track["uri"]:
                 new_queue.append((track, time))
                 found_index += 1
             else:
@@ -73,7 +73,7 @@ class Spotify:
 
         return resp
 
-    def add_track_to_queue(self, uri: str) -> dict:
+    def add_track_to_queue(self, uri: str) -> schemas.SpotifyTrackObject:
         resp = self._do_request(
             "POST",
             "https://api.spotify.com/v1/me/player/queue?" + urllib.parse.urlencode({"uri": uri}),
@@ -130,7 +130,7 @@ class Spotify:
         resp.raise_for_status()
 
         if can_cache:
-            self._cache[f"{method} {url}"] = (resp, datetime.datetime.now() + datetime.timedelta(seconds=cache_time))
+            self._cache[f"{method} {url}"] = (resp, datetime.datetime.now() + datetime.timedelta(seconds=15))
 
         return resp
 
