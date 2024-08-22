@@ -1,6 +1,6 @@
 import { Component, input, InputSignal } from '@angular/core';
 import { IconComponent } from "../icon/icon.component";
-import { AsyncPipe } from "@angular/common";
+import { AsyncPipe, NgClass } from "@angular/common";
 import { millisecondsToTimeString, PlaybackState } from "../api-services/models";
 
 @Component({
@@ -8,7 +8,8 @@ import { millisecondsToTimeString, PlaybackState } from "../api-services/models"
 	standalone: true,
 	imports: [
 		IconComponent,
-		AsyncPipe
+		AsyncPipe,
+		NgClass
 	],
 	templateUrl: './playback-state-display.component.html',
 	styleUrl: './playback-state-display.component.sass'

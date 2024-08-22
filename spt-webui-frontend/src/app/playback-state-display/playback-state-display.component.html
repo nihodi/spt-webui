@@ -1,5 +1,24 @@
-<div>
-	<label>{{ millisecondsToTimeString(playbackState().progress_ms) }}</label>
-	<progress [value]="playbackState().progress_ms" [max]="playbackState().item.duration_ms"></progress>
-	<label>{{ millisecondsToTimeString(playbackState().item.duration_ms) }}</label>
+<div class="container">
+	<div class="progress-bar">
+		<label>{{ millisecondsToTimeString(playbackState().progress_ms) }}</label>
+		<progress [value]="playbackState().progress_ms" [max]="playbackState().item.duration_ms"></progress>
+		<label>{{ millisecondsToTimeString(playbackState().item.duration_ms) }}</label>
+	</div>
+
+	<div class="shuffle-repeat-pills">
+		<app-icon
+			[ngClass]="{'active': playbackState().shuffle_state}"
+			[ariaLabel]="playbackState().shuffle_state ? 'Shuffle is enabled.' :
+			'Shuffle is disabled.'"
+		>
+			shuffle
+		</app-icon>
+		<app-icon
+			[ngClass]="{'active': playbackState().repeat_state}"
+			[ariaLabel]="playbackState().shuffle_state ? 'Repeat playlist is enabled.' :
+			'Repeat playlist is disabled.' "
+		>
+			repeat
+		</app-icon>
+	</div>
 </div>

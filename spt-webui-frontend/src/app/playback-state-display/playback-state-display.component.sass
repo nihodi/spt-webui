@@ -1,10 +1,21 @@
-div
+div.container
 	display: flex
-	align-items: center
-	gap: 10px
+	flex-direction: column
+	gap: 5px
+
+	div
+		display: flex
+		align-items: center
+		gap: 10px
 
 
-	progress
-		width: 100%
-		border-radius: 5px
-		height: 5px
+		progress
+			width: 100%
+			border-radius: 5px
+			height: 5px
+
+		app-icon
+			color: darken(#FFF5, 10%)
+
+		app-icon.active
+			color: lime
