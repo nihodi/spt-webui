@@ -77,7 +77,7 @@ export interface PlaybackState {
 	progress_ms: number;
 	is_playing: boolean;
 
-	repeat_state: boolean;
+	repeat_state: "off" | "track" | "context";
 	shuffle_state: boolean;
 
 	currently_playing_type: "track" | "episode" | "ad" | "unknown";

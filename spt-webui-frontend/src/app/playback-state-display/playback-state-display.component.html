@@ -14,11 +14,15 @@
 			shuffle
 		</app-icon>
 		<app-icon
-			[ngClass]="{'active': playbackState().repeat_state}"
+			[ngClass]="{'active': playbackState().repeat_state !== 'off'}"
 			[ariaLabel]="playbackState().shuffle_state ? 'Repeat playlist is enabled.' :
 			'Repeat playlist is disabled.' "
 		>
-			repeat
+			@if (playbackState().repeat_state === "track") {
+				repeat_one
+			} @else {
+				repeat
+			}
 		</app-icon>
 	</div>
 </div>
