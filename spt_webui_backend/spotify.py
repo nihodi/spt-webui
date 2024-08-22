@@ -37,6 +37,18 @@ class Spotify:
             return None
 
         state = schemas.SpotifyPlaybackState.model_validate(resp.json())
+
+        # if there is less than 15 seconds remaining of the song, set the cache expiration time to the remaining time
+        if state.item.duration_ms - state.progress_ms < 15_000:
+            try:
+                resp, time = self._cache["GET https://api.spotify.com/v1/me/player"]
+                time = datetime.datetime.now() + datetime.timedelta(seconds=(state.item.duration_ms - state.progress_ms) / 1000)
+                print(f"less than 15 seconds remaining. settings cache time to {time}")
+                self._cache["GET https://api.spotify.com/v1/me/player"] = (resp, time)
+
+            except KeyError:
+                pass
+
         return state
 
     def get_me(self) -> schemas.SpotifyUser:
