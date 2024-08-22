@@ -1,7 +1,7 @@
 <div class="container">
 	<div class="progress-bar">
 		<label>{{ millisecondsToTimeString(playbackState().progress_ms) }}</label>
-		<progress [value]="playbackState().progress_ms" [max]="playbackState().item.duration_ms"></progress>
+		<progress aria-label="Song progress" [value]="playbackState().progress_ms" [max]="playbackState().item.duration_ms"></progress>
 		<label>{{ millisecondsToTimeString(playbackState().item.duration_ms) }}</label>
 	</div>
 
