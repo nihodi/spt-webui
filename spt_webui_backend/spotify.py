@@ -35,7 +35,8 @@ class Spotify:
         if resp.status_code == 204:
             return None
 
-        return resp.json()
+        state = schemas.SpotifyPlaybackState.model_validate(resp.json())
+        return state
 
     def get_me(self) -> schemas.SpotifyUser:
         return schemas.SpotifyUser.model_validate(self._do_request("GET", "https://api.spotify.com/v1/me").json())
@@ -59,7 +60,6 @@ class Spotify:
         for track in resp["queue"]:
             track["is_in_queue"] = False
 
-
         found_index = 0
         new_queue = []
         for track, time in self._recently_requested_songs:
@@ -82,7 +82,6 @@ class Spotify:
         )
         resp.raise_for_status()
 
-
         track_data = self.get_track_info(uri[14:])
         self._recently_requested_songs.append((track_data, datetime.datetime.now()))
 
@@ -94,8 +93,13 @@ class Spotify:
 
         return track_data
 
-    def _do_request(self, method: Literal["GET", "POST"], url: str, can_cache: bool = True,
-                    **kwargs) -> requests.Response:
+    def _do_request(
+            self,
+            method: Literal["GET", "POST"],
+            url: str,
+            can_cache: bool = True,
+            **kwargs
+    ) -> requests.Response:
         if can_cache:
             cache = self._cache.get(f"{method} {url}")
 
@@ -103,7 +107,7 @@ class Spotify:
                 (resp, timestamp) = cache
                 # if less than 15 seconds have passed, return cache
                 print(f"returned cached response for url: {method} {url}")
-                if (datetime.datetime.now() - timestamp).total_seconds() < 15:
+                if (datetime.datetime.now() - timestamp).total_seconds() <= 0:
                     return resp
 
                 # remove from cache if more than 15 seconds have passed
@@ -127,7 +131,7 @@ class Spotify:
         resp.raise_for_status()
 
         if can_cache:
-            self._cache[f"{method} {url}"] = (resp, datetime.datetime.now())
+            self._cache[f"{method} {url}"] = (resp, datetime.datetime.now() + datetime.timedelta(seconds=cache_time))
 
         return resp
 

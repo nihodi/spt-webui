@@ -151,7 +151,15 @@ def logout(
 
 @router.get(
     "/playback/state",
-    responses={200: {}, 204: {"model": None, "description": "Playback not available or active"}}
+    responses={
+        200: {
+            "model": schemas.SpotifyPlaybackState
+        },
+        204: {
+            "model": None,
+            "description": "Playback not available or active"
+        }
+    }
 )
 def get_spotify_playback_state(
         spotify_instance: spotify.Spotify = fastapi.Depends(spotify.get_spotify_instance)
