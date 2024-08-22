@@ -52,6 +52,7 @@ class SpotifyTrackObject(BaseModel):
 
     artists: List[SpotifySimplifiedArtistObject]
 
+    external_urls: SpotifyExternalUrls
     href: str
     uri: str
 
@@ -73,6 +74,9 @@ class SpotifyTrackObject(BaseModel):
         name: str
         release_date: str
         type: Literal["album"]
+
+
+    album: Album
 
 
 class SpotifyContextObject(BaseModel):
