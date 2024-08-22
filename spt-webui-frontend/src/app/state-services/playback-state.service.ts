@@ -74,12 +74,15 @@ export class PlaybackStateService {
 		if (this.isUpdatingState)
 			return;
 
-		// TODO: more logic to update "smarter"
-
 		const state = this.getPlaybackState();
+		let timeUntilSongEnds = null;
+		if (state !== null) {
+			timeUntilSongEnds = state?.item.duration_ms - state?.progress_ms;
+		}
+
 		this.isUpdatingState = setTimeout(() => {
 			this.updatePlaybackState();
-		}, 15_000);
+		}, Math.min(15_000, timeUntilSongEnds ?? 15_000));
 	}
 
 	addedSongToQueue(): void {
