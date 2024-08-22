@@ -3,6 +3,7 @@
 		<section>
 			<h1>Currently listening to</h1>
 			<app-track-card [track]="(playbackState.playbackState$ | async)?.item!"></app-track-card>
+			<app-playback-state-display [playbackState]="(playbackState.playbackState$ | async)!"></app-playback-state-display>
 		</section>
 
 

@@ -1,9 +1,10 @@
-import { Component, signal } from '@angular/core';
+import { Component } from '@angular/core';
 import {
 	AbstractControl,
 	FormBuilder,
 	FormControl,
-	FormGroup, ReactiveFormsModule,
+	FormGroup,
+	ReactiveFormsModule,
 	ValidationErrors,
 	ValidatorFn,
 	Validators
@@ -17,6 +18,7 @@ import { TrackListComponent } from "../../track-list/track-list.component";
 import { AuthService } from "../../state-services/auth.service";
 import { Subscription } from "rxjs";
 import { NotificationsService } from "../../notifications.service";
+import { PlaybackStateDisplayComponent } from "../../playback-state-display/playback-state-display.component";
 
 const matchesSpotifyUrl: ValidatorFn = (control: AbstractControl): ValidationErrors | null => {
 	const regex = /https:\/\/open.spotify.com\/track\/[a-zA-Z0-9]+/g;
@@ -37,7 +39,8 @@ const matchesSpotifyUrl: ValidatorFn = (control: AbstractControl): ValidationErr
 		TrackCardComponent,
 		AsyncPipe,
 		ReactiveFormsModule,
-		TrackListComponent
+		TrackListComponent,
+		PlaybackStateDisplayComponent
 	],
 	templateUrl: './index.component.html',
 	styleUrl: './index.component.sass'
