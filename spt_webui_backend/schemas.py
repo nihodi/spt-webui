@@ -1,5 +1,5 @@
 import datetime
-from typing import Literal, List
+from typing import Literal, List, Optional
 
 from pydantic import BaseModel
 
@@ -97,3 +97,8 @@ class SpotifyPlaybackState(BaseModel):
     repeat_state: Literal["off", "track", "context"]
     shuffle_state: bool
     currently_playing_type: Literal["track", "episode", "ad", "unknown"]
+
+
+class SpotifyQueue(BaseModel):
+    currently_playing: Optional[SpotifyTrackObject]
+    queue: List[SpotifyTrackObject]
