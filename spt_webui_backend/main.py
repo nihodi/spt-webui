@@ -13,9 +13,12 @@ from starlette.requests import Request
 
 import spt_webui_backend.database as database
 import spt_webui_backend.database.crud
+import spt_webui_backend.database.migrate
 from spt_webui_backend import oauth2, spotify, security, schemas
 from spt_webui_backend.environment import ENVIRONMENT
 from spt_webui_backend.schemas import AccessToken
+
+spt_webui_backend.database.migrate.migrate_to_head()
 
 middleware = [
     Middleware(
