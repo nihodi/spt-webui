@@ -4,6 +4,8 @@ from typing import Optional, Annotated
 
 import fastapi
 import requests_oauthlib
+import sqlalchemy as sa
+import sqlalchemy.orm
 from fastapi import Query, APIRouter
 from fastapi.responses import JSONResponse
 from starlette.middleware import Middleware
@@ -12,7 +14,7 @@ from starlette.middleware.sessions import SessionMiddleware
 from starlette.requests import Request
 
 import spt_webui_backend.database as database
-import spt_webui_backend.database.crud
+import spt_webui_backend.database.crud as crud
 import spt_webui_backend.database.migrate
 from spt_webui_backend import oauth2, spotify, security, schemas
 from spt_webui_backend.environment import ENVIRONMENT
@@ -121,7 +123,7 @@ def spotify_auth_callback(
 
     with database.SessionLocal() as db:
         user = database.models.User(discord_user_id=discord_id, discord_display_name=username)
-        user = database.crud.create_user_if_not_exists(db, user)
+        user = crud.create_user_if_not_exists(db, user)
 
     request.session["user_id"] = user.id
 
@@ -200,6 +202,7 @@ def add_spotify_queue_item(
             )
         ],
 
+        db: sa.orm.Session = fastapi.Depends(database.get_db),
         user: database.models.User = fastapi.Depends(security.get_current_user),
         spotify_instance: spotify.Spotify = fastapi.Depends(spotify.get_spotify_instance)
 ):
@@ -208,8 +211,11 @@ def add_spotify_queue_item(
     if spotify_instance.track_is_in_queue(track_uri):
         raise fastapi.HTTPException(fastapi.status.HTTP_409_CONFLICT, detail="Song is already present in the queue.")
 
-    print(f"User {user.discord_display_name} requested the song {url}")
-    return spotify_instance.add_track_to_queue(f"{track_uri}")
+    spotify_track = spotify_instance.add_track_to_queue(f"{track_uri}")
+    print(f"User {user.discord_display_name} requested the song {spotify_track.name}")
+
+    crud.add_song_request(db, spotify_track, user)
+    return spotify_track
 
 
 @router.get("/playback/queue")
