@@ -57,7 +57,7 @@ def add_artists_for_song_if_not_exists(db: Session, spotify_track: schemas.Spoti
         requested_artist = models.RequestedSpotifySongArtist(
             spotify_name=artist.name,
             spotify_id=artist.id,
-            spotify_requested_songs=[requested_song]
+            spotify_requested_songs={requested_song}
         )
 
         db.add(requested_artist)
@@ -83,8 +83,8 @@ def add_requested_song_if_not_exists(
     requested_song = models.RequestedSpotifySong(
         spotify_name=spotify_track.name,
         spotify_id=spotify_track.id,
-        spotify_large_image_link=spotify_track.album.images[0],
-        spotify_small_image_link=spotify_track.album.images[-1],
+        spotify_large_image_link=spotify_track.album.images[0].url,
+        spotify_small_image_link=spotify_track.album.images[-1].url,
     )
 
     db.add(requested_song)
