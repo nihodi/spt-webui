@@ -3,7 +3,8 @@
 		<section>
 			<h1>Currently listening to</h1>
 			<app-track-card [track]="(playbackState.playbackState$ | async)?.item!"></app-track-card>
-			<app-playback-state-display [playbackState]="(playbackState.playbackState$ | async)!"></app-playback-state-display>
+			<app-playback-state-display
+				[playbackState]="(playbackState.playbackState$ | async)!"></app-playback-state-display>
 		</section>
 
 
@@ -36,10 +37,19 @@
 		</section>
 
 	} @else {
-		<section>
-			<h1>Not online :(</h1>
+		@if (playbackState.isInitialLoad$ | async) {
+			<div class="vertical-center">
+				<app-spinner></app-spinner>
+				<h1>Loading playback state...</h1>
+			</div>
 
-			<h3>No songs can be submitted, because I'm offline on Spotify.</h3>
-		</section>
+		} @else {
+			<section>
+				<h1>Not online :(</h1>
+
+				<h3>No songs can be submitted, because I'm offline on Spotify.</h3>
+			</section>
+		}
+
 	}
 </div>

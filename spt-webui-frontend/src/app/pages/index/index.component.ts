@@ -19,6 +19,7 @@ import { AuthService } from "../../state-services/auth.service";
 import { Subscription } from "rxjs";
 import { NotificationsService } from "../../notifications.service";
 import { PlaybackStateDisplayComponent } from "../../playback-state-display/playback-state-display.component";
+import { SpinnerComponent } from "../../spinner/spinner.component";
 
 const matchesSpotifyUrl: ValidatorFn = (control: AbstractControl): ValidationErrors | null => {
 	const regex = /https:\/\/open.spotify.com\/track\/[a-zA-Z0-9]+/g;
@@ -40,7 +41,8 @@ const matchesSpotifyUrl: ValidatorFn = (control: AbstractControl): ValidationErr
 		AsyncPipe,
 		ReactiveFormsModule,
 		TrackListComponent,
-		PlaybackStateDisplayComponent
+		PlaybackStateDisplayComponent,
+		SpinnerComponent
 	],
 	templateUrl: './index.component.html',
 	styleUrl: './index.component.sass'

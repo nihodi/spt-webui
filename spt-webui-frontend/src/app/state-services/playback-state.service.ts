@@ -26,6 +26,9 @@ export class PlaybackStateService {
 	private isUpdatingState: null | number = null;
 	private incrementProjectedSongProgressTimer: null | number = null;
 
+	private _isInitialLoad: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(true);
+	isInitialLoad$ = this._isInitialLoad.asObservable();
+
 	getPlaybackState(): PlaybackState | null {
 		return this._playbackState.getValue();
 	}
@@ -53,6 +56,7 @@ export class PlaybackStateService {
 
 		this.apiWrapper.getPlaybackState().pipe(retry({delay: 1000, count: 1})).subscribe({
 			next: state => {
+				this._isInitialLoad.next(false);
 				this._playbackState.next(state);
 
 				this.isUpdatingState = null;
