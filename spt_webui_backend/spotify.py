@@ -104,7 +104,7 @@ class Spotify:
 
         return track_data
 
-    def add_tracks_to_playlist(self, playlist_id: str, uris: List[str]):
+    def add_tracks_to_playlist(self, playlist_id: str, uris: List[str] | Tuple[str]):
         if len(uris) > 100:
             raise ValueError("uris must have a length of less than or equal to 100")
 
