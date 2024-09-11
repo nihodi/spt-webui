@@ -7,7 +7,24 @@ Create Date: 2024-09-11 18:29:12.673155
 not really a database revision, but I'm using this "framework" because it's convenient
 
 """
-from itertools import batched
+
+try:
+    from itertools import batched
+except ImportError:
+    from itertools import islice
+
+    # grabbed from for python 3.11 compatability.
+    # TODO: remove when debian 13 releases...
+    # https://docs.python.org/3/library/itertools.html#itertools.batched
+
+    def batched(iterable, n):
+        # batched('ABCDEFG', 3) → ABC DEF G
+        if n < 1:
+            raise ValueError('n must be at least one')
+        iterator = iter(iterable)
+        while batch := tuple(islice(iterator, n)):
+            yield batch
+
 from typing import Sequence, Union
 
 from alembic import op
