@@ -245,7 +245,7 @@ def add_spotify_queue_item(
                     {
                         "title": f"{artists} - {spotify_track.name}",
                         "description": "Song requested!\n\nRequest your own songs [here](https://niklas.dietzel.no/spt-webui/)!",
-                        "url": "https://niklas.dietzel.no/spt-webui/",
+                        "url": spotify_track.external_urls.spotify,
                         "color": 5814783,
                         "footer": {
                             "text": "spt-webui webhook"
