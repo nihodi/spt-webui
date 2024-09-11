@@ -104,6 +104,16 @@ class Spotify:
 
         return track_data
 
+    def add_tracks_to_playlist(self, playlist_id: str, uris: List[str]):
+        if len(uris) > 100:
+            raise ValueError("uris must have a length of less than or equal to 100")
+
+        self._do_request(
+            "POST",
+            f"https://api.spotify.com/v1/playlists/{playlist_id}/tracks?{urllib.parse.urlencode({"uris": ",".join(uris)})}",
+            False,
+        )
+
     def _do_request(
             self,
             method: Literal["GET", "POST"],
