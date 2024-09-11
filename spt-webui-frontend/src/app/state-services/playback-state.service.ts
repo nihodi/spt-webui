@@ -62,9 +62,11 @@ export class PlaybackStateService {
 				this.isUpdatingState = null;
 				this.schedulePlaybackStateUpdate();
 
-				this.incrementProjectedSongProgressTimer = setInterval(() => {
-					this.incrementProjectedSongProgress();
-				}, 1000);
+				if (state?.is_playing) {
+					this.incrementProjectedSongProgressTimer = setInterval(() => {
+						this.incrementProjectedSongProgress();
+					}, 1000);
+				}
 			},
 			error: (err: HttpErrorResponse) => {
 				this.schedulePlaybackStateUpdate();
