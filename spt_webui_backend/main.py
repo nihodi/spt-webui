@@ -1,9 +1,11 @@
 import datetime
+import json
 import urllib.parse
 from contextlib import asynccontextmanager
 from typing import Optional, Annotated
 
 import fastapi
+import requests
 import requests_oauthlib
 import sqlalchemy as sa
 import sqlalchemy.orm
@@ -34,6 +36,7 @@ middleware = [
         allow_origins=[ENVIRONMENT.allowed_origin]
     )
 ]
+
 
 @asynccontextmanager
 async def lifespan(_app: fastapi.FastAPI):
@@ -221,15 +224,53 @@ def add_spotify_queue_item(
     spotify_track = spotify_instance.add_track_to_queue(f"{track_uri}")
     print(f"User {user.discord_display_name} requested the song {spotify_track.name}")
 
-
+    # background task
     def add_track_to_playlist():
         if not crud.get_spotify_requested_song_by_spotify_id(db, spotify_track.id):
             if ENVIRONMENT.spotify_playlist_id:
                 spotify_instance.add_tracks_to_playlist(ENVIRONMENT.spotify_playlist_id, [spotify_track.uri])
 
-
         crud.add_song_request(db, spotify_track, user)
-        pass
+
+
+        if not ENVIRONMENT.discord_webhook_url:
+            return
+
+        # send discord webhook. looks scary, it really isn't.
+        artists = ", ".join([artist.name for artist in spotify_track.artists])
+        data = json.dumps(
+            {
+                "content": "",
+                "embeds": [
+                    {
+                        "title": f"{artists} - {spotify_track.name}",
+                        "description": "Song requested!\n\nRequest your own songs [here](https://niklas.dietzel.no/spt-webui/)!",
+                        "url": "https://niklas.dietzel.no/spt-webui/",
+                        "color": 5814783,
+                        "footer": {
+                            "text": "spt-webui webhook"
+                        },
+                        "timestamp": datetime.datetime.now(datetime.timezone.utc).isoformat(timespec="seconds"),
+                        "image": {
+                            "url": spotify_track.album.images[0].url,
+                        },
+                        "thumbnail": {
+                            "url": "https://storage.googleapis.com/pr-newsroom-wp/1/2023/05/Spotify_Primary_Logo_RGB_Green.png"
+                        }
+                    }
+                ],
+                "username": "spt-webui",
+                "attachments": []
+            }
+        )
+
+        resp = requests.post(
+            ENVIRONMENT.discord_webhook_url + "?wait=true",
+            data=data,
+            headers={"Content-Type": "application/json"},
+        )
+
+        resp.raise_for_status()
 
     background_tasks.add_task(add_track_to_playlist)
     return spotify_track

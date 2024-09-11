@@ -20,6 +20,7 @@ class Settings(BaseSettings):
     discord_client_secret: str
 
     discord_redirect_uri: str = "http://localhost:8000/auth/callback/discord"
+    discord_webhook_url: Optional[str] = None
 
     secret_key: str
 
