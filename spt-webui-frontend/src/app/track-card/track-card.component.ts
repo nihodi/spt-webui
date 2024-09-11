@@ -1,4 +1,4 @@
-import { Component, input } from '@angular/core';
+import { Component, computed, input } from '@angular/core';
 import { TrackObject } from "../api-services/models";
 
 @Component({
@@ -10,4 +10,8 @@ import { TrackObject } from "../api-services/models";
 })
 export class TrackCardComponent {
 	track = input.required<TrackObject>();
+
+	artists = computed(() => {
+		return this.track().artists.map(x => x.name).join(", ");
+	});
 }

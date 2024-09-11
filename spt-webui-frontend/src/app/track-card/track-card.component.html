@@ -8,9 +8,7 @@
 	<div class="track-info">
 		<a class="track-name" [href]="track().external_urls.spotify">{{ track().name }}</a>
 		<div class="track-artists">
-			@for(artist of track().artists; track artist.id) {
-				<a [href]="artist.external_urls.spotify">{{ artist.name }}</a>@if (!$last) {, }
-			}
+			{{ artists() }}
 		</div>
 	</div>
 </div>

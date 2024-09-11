@@ -89,7 +89,7 @@ export class IndexComponent {
 				this.playbackState.addedSongToQueue();
 				this.notificationsService.addNotification({
 					type: "success",
-					message: `Added ${ track.name } by ${ track.artists[0].name } to the queue!`
+					message: `Added ${ track.name } by ${ track.artists.map(x => x.name).join(", ") } to the queue!`
 				});
 
 			}, error: (err: HttpErrorResponse) => {
