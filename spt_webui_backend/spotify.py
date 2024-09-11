@@ -108,9 +108,10 @@ class Spotify:
         if len(uris) > 100:
             raise ValueError("uris must have a length of less than or equal to 100")
 
+        uris = urllib.parse.urlencode({"uris": ",".join(uris)})
         self._do_request(
             "POST",
-            f"https://api.spotify.com/v1/playlists/{playlist_id}/tracks?{urllib.parse.urlencode({"uris": ",".join(uris)})}",
+            f"https://api.spotify.com/v1/playlists/{playlist_id}/tracks?{uris}",
             False,
         )
 
