@@ -3,19 +3,41 @@ div.container
 	flex-direction: column
 	gap: 5px
 
-	div
+	div.progress-bar
 		display: flex
 		align-items: center
 		gap: 10px
-
 
 		progress
 			width: 100%
 			border-radius: 5px
 			height: 5px
 
-		app-icon
-			color: darken(#FFF5, 10%)
+	div.other-status-indicators
+		display: grid
+		grid-template-columns: 1fr 1fr 1fr
 
-		app-icon.active
-			color: lime
+
+		div.shuffle-repeat-pills
+			display: flex
+			align-items: center
+			gap: 10px
+
+
+
+			app-icon
+				color: darken(#FFF5, 10%)
+
+			app-icon.active
+				color: lime
+
+		div.playback-state
+			display: flex
+			justify-content: center
+			align-items: center
+
+			app-icon
+				&>
+					color: white
+					font-size: 32px
+

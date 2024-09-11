@@ -1,28 +1,46 @@
 <div class="container">
 	<div class="progress-bar">
 		<label>{{ millisecondsToTimeString(playbackState().progress_ms) }}</label>
-		<progress aria-label="Song progress" [value]="playbackState().progress_ms" [max]="playbackState().item.duration_ms"></progress>
+		<progress aria-label="Song progress" [value]="playbackState().progress_ms"
+				  [max]="playbackState().item.duration_ms"></progress>
 		<label>{{ millisecondsToTimeString(playbackState().item.duration_ms) }}</label>
 	</div>
 
-	<div class="shuffle-repeat-pills">
-		<app-icon
-			[ngClass]="{'active': playbackState().shuffle_state}"
-			[ariaLabel]="playbackState().shuffle_state ? 'Shuffle is enabled.' :
+	<div class="other-status-indicators">
+		<div class="shuffle-repeat-pills">
+			<app-icon
+				[ngClass]="{'active': playbackState().shuffle_state}"
+				[ariaLabel]="playbackState().shuffle_state ? 'Shuffle is enabled.' :
 			'Shuffle is disabled.'"
-		>
-			shuffle
-		</app-icon>
-		<app-icon
-			[ngClass]="{'active': playbackState().repeat_state !== 'off'}"
-			[ariaLabel]="playbackState().shuffle_state ? 'Repeat playlist is enabled.' :
+			>
+				shuffle
+			</app-icon>
+			<app-icon
+				[ngClass]="{'active': playbackState().repeat_state !== 'off'}"
+				[ariaLabel]="playbackState().shuffle_state ? 'Repeat playlist is enabled.' :
 			'Repeat playlist is disabled.' "
-		>
-			@if (playbackState().repeat_state === "track") {
-				repeat_one
+			>
+				@if (playbackState().repeat_state === "track") {
+					repeat_one
+				} @else {
+					repeat
+				}
+			</app-icon>
+		</div>
+		<div class="playback-state">
+			@if (playbackState().is_playing) {
+				<app-icon
+					[ariaLabel]="'Playing'"
+				>
+					play_arrow
+				</app-icon>
 			} @else {
-				repeat
+				<app-icon
+					[ariaLabel]="'Paused'"
+				>
+					pause
+				</app-icon>
 			}
-		</app-icon>
+		</div>
 	</div>
 </div>
