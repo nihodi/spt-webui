@@ -25,8 +25,5 @@ export class TrackListComponent {
 
 		return artists;
 	});
-
-	protected readonly Math = Math;
-
 	protected readonly millisecondsToTimeString = millisecondsToTimeString;
 }

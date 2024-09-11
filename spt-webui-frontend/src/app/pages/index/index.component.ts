@@ -73,7 +73,7 @@ export class IndexComponent {
 
 	addToQueueForm: FormGroup<{ url: FormControl<string | null> }>;
 
-	addToQueue($event: SubmitEvent) {
+	addToQueue() {
 		const url = new URL(this.addToQueueForm.value.url!);
 		url.search = "";
 
