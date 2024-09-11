@@ -98,7 +98,7 @@ export class IndexComponent {
 				if (err.status === 409) {
 					this.notificationsService.addNotification({
 						type: "error",
-						message: `Failed to request song. Reason: Song is already in the queue!`
+						message: `Failed to request song. Reason: Song is already in the queue or is already playing!`
 					});
 
 					return;
