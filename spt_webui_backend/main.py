@@ -201,7 +201,7 @@ def add_spotify_queue_item(
                 }
             )
         ],
-
+        background_tasks: fastapi.BackgroundTasks,
         db: sa.orm.Session = fastapi.Depends(database.get_db),
         user: database.models.User = fastapi.Depends(security.get_current_user),
         spotify_instance: spotify.Spotify = fastapi.Depends(spotify.get_spotify_instance)
@@ -214,7 +214,17 @@ def add_spotify_queue_item(
     spotify_track = spotify_instance.add_track_to_queue(f"{track_uri}")
     print(f"User {user.discord_display_name} requested the song {spotify_track.name}")
 
-    crud.add_song_request(db, spotify_track, user)
+
+    def add_track_to_playlist():
+        if not crud.get_spotify_requested_song_by_spotify_id(db, spotify_track.id):
+            if ENVIRONMENT.spotify_playlist_id:
+                spotify_instance.add_tracks_to_playlist(ENVIRONMENT.spotify_playlist_id, [spotify_track.uri])
+
+
+        crud.add_song_request(db, spotify_track, user)
+        pass
+
+    background_tasks.add_task(add_track_to_playlist)
     return spotify_track
 
 
