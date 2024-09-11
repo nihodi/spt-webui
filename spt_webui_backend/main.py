@@ -219,7 +219,7 @@ def add_spotify_queue_item(
     track_uri = f"spotify:track:{spotify.get_track_id_from_shared_url(url)}"
 
     if spotify_instance.track_is_in_queue(track_uri):
-        raise fastapi.HTTPException(fastapi.status.HTTP_409_CONFLICT, detail="Song is already present in the queue.")
+        raise fastapi.HTTPException(fastapi.status.HTTP_409_CONFLICT, detail="Song is already present in the queue or is already playing.")
 
     spotify_track = spotify_instance.add_track_to_queue(f"{track_uri}")
     print(f"User {user.discord_display_name} requested the song {spotify_track.name}")

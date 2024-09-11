@@ -65,7 +65,7 @@ class Spotify:
             if track.uri == uri:
                 return True
 
-        return False
+        return self.get_playback_state().item.uri == uri
 
     def get_playback_queue(self) -> schemas.SpotifyQueue:
         resp = schemas.SpotifyQueue.model_validate(
