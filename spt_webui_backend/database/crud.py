@@ -68,6 +68,13 @@ def add_artists_for_song_if_not_exists(db: Session, spotify_track: schemas.Spoti
     return artists
 
 
+def get_spotify_requested_song_by_spotify_id(
+        db: Session,
+        spotify_id: str
+) -> Optional[models.RequestedSpotifySong]:
+    return db.execute(sa.select(models.RequestedSpotifySong).where(models.RequestedSpotifySong.spotify_id == spotify_id)).scalar()
+
+
 def add_requested_song_if_not_exists(
         db: Session,
         spotify_track: schemas.SpotifyTrackObject,
