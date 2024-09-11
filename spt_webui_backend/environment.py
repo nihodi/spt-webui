@@ -1,3 +1,5 @@
+from typing import Optional
+
 from pydantic_settings import BaseSettings
 
 
@@ -8,6 +10,8 @@ class Settings(BaseSettings):
     spotify_redirect_uri: str = "http://localhost:8000/auth/callback"
 
     spotify_allowed_account_id: str
+
+    spotify_playlist_id: Optional[str] = None
 
     database_user: str
     database_password: str
