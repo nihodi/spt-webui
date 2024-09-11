@@ -1,5 +1,6 @@
 import datetime
 import urllib.parse
+from contextlib import asynccontextmanager
 from typing import Optional, Annotated
 
 import fastapi
@@ -20,8 +21,6 @@ from spt_webui_backend import oauth2, spotify, security, schemas
 from spt_webui_backend.environment import ENVIRONMENT
 from spt_webui_backend.schemas import AccessToken
 
-spt_webui_backend.database.migrate.migrate_to_head()
-
 middleware = [
     Middleware(
         SessionMiddleware,
@@ -35,7 +34,15 @@ middleware = [
         allow_origins=[ENVIRONMENT.allowed_origin]
     )
 ]
-app = fastapi.FastAPI(middleware=middleware)
+
+@asynccontextmanager
+async def lifespan(_app: fastapi.FastAPI):
+    # startup stuff
+    spt_webui_backend.database.migrate.migrate_to_head()
+    yield
+
+
+app = fastapi.FastAPI(middleware=middleware, lifespan=lifespan)
 router = APIRouter()
 
 
