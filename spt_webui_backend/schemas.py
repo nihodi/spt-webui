@@ -104,6 +104,29 @@ class SpotifyQueue(BaseModel):
     queue: List[SpotifyTrackObject]
 
 
+class DbSpotifyArtist(BaseModel):
+    spotify_name: str
+    spotify_id: str
+
+    class Config:
+        from_attributes = True
+
+class DbSpotifySong(BaseModel):
+    spotify_name: str
+    spotify_id: str
+
+    spotify_large_image_link: str
+    spotify_small_image_link: str
+
+    explicit: bool
+    length_ms: int
+
+    spotify_artists: List[DbSpotifyArtist]
+
+    class Config:
+        from_attributes = True
+
+
 class ApiStats(BaseModel):
 
     total_requests: int
@@ -112,9 +135,22 @@ class ApiStats(BaseModel):
 
     class DateRequestCount(BaseModel):
         date: datetime.date
-        count: int
+        request_count: int
 
         class Config:
             from_attributes = True
 
     requests_grouped_by_date: List[DateRequestCount]
+
+    class RequestedArtist(BaseModel):
+        artist: DbSpotifyArtist
+        request_count: int
+
+    most_requested_artists: List[RequestedArtist]
+
+    class RequestedSong(BaseModel):
+        song: DbSpotifySong
+        request_count: int
+
+
+    most_requested_songs: List[RequestedSong]

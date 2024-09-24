@@ -140,14 +140,41 @@ def get_stats(db: Session) -> schemas.ApiStats:
     song_request_timestamps = db.execute(
         sa.select(
             sa.func.DATE(models.SongRequest.timestamp).label("date"),
-            sa.func.count(models.SongRequest.id).label("count")
+            sa.func.count(models.SongRequest.id).label("request_count")
         ).group_by(
             sa.func.DATE(models.SongRequest.timestamp)
         )
     )
 
+    most_requested_artists = db.execute(
+        sa.select(
+            models.RequestedSpotifySongArtist,
+            sa.func.count(models.spotify_songs_artists_association_table.c.requested_spotify_song_id)
+        )
+        .join(
+            models.spotify_songs_artists_association_table,
+            models.RequestedSpotifySongArtist.id == models.spotify_songs_artists_association_table.c.requested_spotify_songs_artists_id
+        )
+        .group_by(models.RequestedSpotifySongArtist.spotify_name)
+        .order_by(sa.func.count(models.spotify_songs_artists_association_table.c.requested_spotify_song_id).desc())
+        .limit(20)
+    ).all()
+
+    most_requested_songs = db.execute(
+        sa.select(
+            models.RequestedSpotifySong,
+            sa.func.count(models.SongRequest.id).label('request_count')
+        )
+        .join(models.SongRequest, models.RequestedSpotifySong.id == models.SongRequest.requested_song_id)
+        .group_by(models.RequestedSpotifySong.spotify_name)
+        .order_by(sa.func.count(models.SongRequest.id).desc())
+        .limit(20)
+    )
+
     return schemas.ApiStats.model_validate({
         "total_requests": total_requests,
         "total_listened": total_listened,
-        "requests_grouped_by_date": song_request_timestamps
+        "requests_grouped_by_date": song_request_timestamps,
+        "most_requested_artists": [{"artist": r[0], "request_count": r[1]} for r in most_requested_artists],
+        "most_requested_songs": [{"song": r[0], "request_count": r[1]} for r in most_requested_songs]
     })
