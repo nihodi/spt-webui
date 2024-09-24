@@ -47,6 +47,9 @@ class RequestedSpotifySong(Base):
     spotify_large_image_link: Mapped[str] = mapped_column(sa.String(255), nullable=False)
     spotify_small_image_link: Mapped[str] = mapped_column(sa.String(255), nullable=False)
 
+    length_ms: Mapped[int] = mapped_column(sa.Integer, nullable=False)
+    explicit: Mapped[bool] = mapped_column(sa.Boolean, nullable=False)
+
     spotify_artists: Mapped[List["RequestedSpotifySongArtist"]] = sa.orm.relationship(
         secondary=spotify_songs_artists_association_table,
         back_populates="spotify_requested_songs",

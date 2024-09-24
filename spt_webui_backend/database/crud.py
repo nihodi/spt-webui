@@ -43,6 +43,11 @@ def get_artist_by_spotify_id(db: Session, spotify_id: str) -> Optional[models.Re
     return db.execute(sa.select(models.RequestedSpotifySongArtist).where(models.RequestedSpotifySongArtist.spotify_id == spotify_id)).scalar()
 
 
+def get_track_by_spotify_id(db: Session, spotify_id: str) -> Optional[models.RequestedSpotifySong]:
+    return db.execute(sa.select(models.RequestedSpotifySong).where(models.RequestedSpotifySong.spotify_id == spotify_id)).scalar()
+
+
+
 def add_artists_for_song_if_not_exists(db: Session, spotify_track: schemas.SpotifyTrackObject, requested_song: Optional[models.RequestedSpotifySong] = None) -> List[models.RequestedSpotifySongArtist]:
     artists: List[models.RequestedSpotifySongArtist] = []
     for artist in spotify_track.artists:
@@ -92,6 +97,8 @@ def add_requested_song_if_not_exists(
         spotify_id=spotify_track.id,
         spotify_large_image_link=spotify_track.album.images[0].url,
         spotify_small_image_link=spotify_track.album.images[-1].url,
+        length_ms=spotify_track.duration_ms,
+        explicit=spotify_track.explicit,
     )
 
     db.add(requested_song)
