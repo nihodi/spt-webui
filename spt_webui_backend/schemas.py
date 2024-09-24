@@ -109,4 +109,12 @@ class ApiStats(BaseModel):
     total_requests: int
     total_listened: int
 
-    song_request_timestamps: List[datetime.datetime]
+
+    class DateRequestCount(BaseModel):
+        date: datetime.date
+        count: int
+
+        class Config:
+            from_attributes = True
+
+    requests_grouped_by_date: List[DateRequestCount]

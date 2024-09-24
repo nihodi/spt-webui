@@ -40,15 +40,18 @@ def get_user_by_id(db: Session, user_id: int):
 
 
 def get_artist_by_spotify_id(db: Session, spotify_id: str) -> Optional[models.RequestedSpotifySongArtist]:
-    return db.execute(sa.select(models.RequestedSpotifySongArtist).where(models.RequestedSpotifySongArtist.spotify_id == spotify_id)).scalar()
+    return db.execute(sa.select(models.RequestedSpotifySongArtist).where(
+        models.RequestedSpotifySongArtist.spotify_id == spotify_id)).scalar()
 
 
 def get_track_by_spotify_id(db: Session, spotify_id: str) -> Optional[models.RequestedSpotifySong]:
-    return db.execute(sa.select(models.RequestedSpotifySong).where(models.RequestedSpotifySong.spotify_id == spotify_id)).scalar()
+    return db.execute(
+        sa.select(models.RequestedSpotifySong).where(models.RequestedSpotifySong.spotify_id == spotify_id)).scalar()
 
 
-
-def add_artists_for_song_if_not_exists(db: Session, spotify_track: schemas.SpotifyTrackObject, requested_song: Optional[models.RequestedSpotifySong] = None) -> List[models.RequestedSpotifySongArtist]:
+def add_artists_for_song_if_not_exists(db: Session, spotify_track: schemas.SpotifyTrackObject,
+                                       requested_song: Optional[models.RequestedSpotifySong] = None) -> List[
+    models.RequestedSpotifySongArtist]:
     artists: List[models.RequestedSpotifySongArtist] = []
     for artist in spotify_track.artists:
         existing = get_artist_by_spotify_id(db, artist.id)
@@ -77,14 +80,14 @@ def get_spotify_requested_song_by_spotify_id(
         db: Session,
         spotify_id: str
 ) -> Optional[models.RequestedSpotifySong]:
-    return db.execute(sa.select(models.RequestedSpotifySong).where(models.RequestedSpotifySong.spotify_id == spotify_id)).scalar()
+    return db.execute(
+        sa.select(models.RequestedSpotifySong).where(models.RequestedSpotifySong.spotify_id == spotify_id)).scalar()
 
 
 def add_requested_song_if_not_exists(
         db: Session,
         spotify_track: schemas.SpotifyTrackObject,
 ) -> models.RequestedSpotifySong:
-
     existing = db.execute(
         sa.select(models.RequestedSpotifySong).where(models.RequestedSpotifySong.spotify_id == spotify_track.id)
     ).scalar()
@@ -107,7 +110,6 @@ def add_requested_song_if_not_exists(
     return requested_song
 
 
-
 def add_song_request(db: Session, spotify_track: schemas.SpotifyTrackObject, user: models.User):
     requested_song = add_requested_song_if_not_exists(db, spotify_track)
     artists = add_artists_for_song_if_not_exists(db, spotify_track, requested_song)
@@ -124,8 +126,6 @@ def add_song_request(db: Session, spotify_track: schemas.SpotifyTrackObject, use
     return song_request
 
 
-
-
 def get_stats(db: Session) -> schemas.ApiStats:
     total_requests = db.execute(sa.select(sa.func.count(models.RequestedSpotifySongArtist.id))).scalar()
 
@@ -137,12 +137,17 @@ def get_stats(db: Session) -> schemas.ApiStats:
         .join(models.RequestedSpotifySong, models.SongRequest.requested_song_id == models.RequestedSpotifySong.id)
     ).scalar()
 
-    song_request_timestamps = db.scalars(sa.select(models.SongRequest.timestamp))
-
+    song_request_timestamps = db.execute(
+        sa.select(
+            sa.func.DATE(models.SongRequest.timestamp).label("date"),
+            sa.func.count(models.SongRequest.id).label("count")
+        ).group_by(
+            sa.func.DATE(models.SongRequest.timestamp)
+        )
+    )
 
     return schemas.ApiStats.model_validate({
         "total_requests": total_requests,
         "total_listened": total_listened,
-        "song_request_timestamps": song_request_timestamps
+        "requests_grouped_by_date": song_request_timestamps
     })
-
