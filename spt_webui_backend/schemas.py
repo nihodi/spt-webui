@@ -118,6 +118,9 @@ class DbSpotifyArtist(BaseModel):
     spotify_name: str
     spotify_id: str
 
+    spotify_large_image_link: str
+    spotify_small_image_link: str
+
     class Config:
         from_attributes = True
 
@@ -140,7 +143,7 @@ class DbSpotifySong(BaseModel):
 
 class ApiStats(BaseModel):
     total_requests: int
-    total_listened: int
+    total_ms_listened: int
 
     class DateRequestCount(BaseModel):
         date: datetime.date

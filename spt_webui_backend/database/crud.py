@@ -173,7 +173,7 @@ def get_stats(db: Session) -> schemas.ApiStats:
 
     return schemas.ApiStats.model_validate({
         "total_requests": total_requests,
-        "total_listened": total_listened,
+        "total_ms_listened": total_listened,
         "requests_grouped_by_date": song_request_timestamps,
         "most_requested_artists": [{"artist": r[0], "request_count": r[1]} for r in most_requested_artists],
         "most_requested_songs": [{"song": r[0], "request_count": r[1]} for r in most_requested_songs]
