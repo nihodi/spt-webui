@@ -1,6 +1,6 @@
 import datetime
 import urllib.parse
-from typing import Dict, Tuple, Optional, Literal, List
+from typing import Dict, Tuple, Optional, Literal, List, Sequence
 
 import fastapi
 import requests
@@ -10,6 +10,8 @@ from starlette import status
 from spt_webui_backend import schemas, oauth2
 from spt_webui_backend.schemas import SpotifyTrackObject
 
+
+SPOTIFY_API = "https://api.spotify.com/v1"
 
 def get_track_id_from_shared_url(
         url: str
@@ -32,7 +34,7 @@ class Spotify:
             self.session = session
 
     def get_playback_state(self) -> Optional[schemas.SpotifyPlaybackState]:
-        resp = self._do_request("GET", "https://api.spotify.com/v1/me/player")
+        resp = self._do_request("GET", f"{SPOTIFY_API}/me/player")
         if resp.status_code == 204:
             return None
 
@@ -41,10 +43,11 @@ class Spotify:
         # if there is less than 15 seconds remaining of the song, set the cache expiration time to the remaining time
         if state.item.duration_ms - state.progress_ms < 15_000:
             try:
-                resp, time = self._cache["GET https://api.spotify.com/v1/me/player"]
-                time = datetime.datetime.now() + datetime.timedelta(seconds=(state.item.duration_ms - state.progress_ms) / 1000)
+                resp, time = self._cache[f"GET {SPOTIFY_API}/me/player"]
+                time = datetime.datetime.now() + datetime.timedelta(
+                    seconds=(state.item.duration_ms - state.progress_ms) / 1000)
                 print(f"less than 15 seconds remaining. settings cache time to {time}")
-                self._cache["GET https://api.spotify.com/v1/me/player"] = (resp, time)
+                self._cache[f"GET {SPOTIFY_API}/me/player"] = (resp, time)
 
             except KeyError:
                 pass
@@ -52,10 +55,10 @@ class Spotify:
         return state
 
     def get_me(self) -> schemas.SpotifyUser:
-        return schemas.SpotifyUser.model_validate(self._do_request("GET", "https://api.spotify.com/v1/me").json())
+        return schemas.SpotifyUser.model_validate(self._do_request("GET", f"{SPOTIFY_API}/me").json())
 
     def get_track_info(self, track_id: str) -> Optional[SpotifyTrackObject]:
-        resp = self._do_request("GET", f"https://api.spotify.com/v1/tracks/{track_id}")
+        resp = self._do_request("GET", f"{SPOTIFY_API}/tracks/{track_id}")
         resp.raise_for_status()
 
         return schemas.SpotifyTrackObject.model_validate(resp.json())
@@ -69,7 +72,7 @@ class Spotify:
 
     def get_playback_queue(self) -> schemas.SpotifyQueue:
         resp = schemas.SpotifyQueue.model_validate(
-            self._do_request("GET", "https://api.spotify.com/v1/me/player/queue").json())
+            self._do_request("GET", f"{SPOTIFY_API}/me/player/queue").json())
 
         found_index = 0
         new_queue = []
@@ -88,7 +91,7 @@ class Spotify:
     def add_track_to_queue(self, uri: str) -> schemas.SpotifyTrackObject:
         resp = self._do_request(
             "POST",
-            "https://api.spotify.com/v1/me/player/queue?" + urllib.parse.urlencode({"uri": uri}),
+            f"{SPOTIFY_API}/me/player/queue?" + urllib.parse.urlencode({"uri": uri}),
             False
         )
         resp.raise_for_status()
@@ -98,22 +101,37 @@ class Spotify:
 
         # try to remove queue cache because it just changed
         try:
-            self._cache.pop("GET https://api.spotify.com/v1/me/player/queue")
+            self._cache.pop(f"GET {SPOTIFY_API}/me/player/queue")
         except KeyError:
             pass
 
         return track_data
 
-    def add_tracks_to_playlist(self, playlist_id: str, uris: List[str] | Tuple[str]):
+    def add_tracks_to_playlist(self, playlist_id: str, uris: Sequence[str]):
         if len(uris) > 100:
             raise ValueError("uris must have a length of less than or equal to 100")
 
         uris = urllib.parse.urlencode({"uris": ",".join(uris)})
         self._do_request(
             "POST",
-            f"https://api.spotify.com/v1/playlists/{playlist_id}/tracks?{uris}",
+            f"{SPOTIFY_API}/playlists/{playlist_id}/tracks?{uris}",
             False,
         )
+
+    def get_tracks(self, ids: Sequence[str]) -> List[schemas.SpotifyTrackObject]:
+        if len(ids) > 50:
+            raise ValueError("ids must not be longer than 50")
+
+        uris = urllib.parse.urlencode({"ids": ",".join(ids)})
+
+        resp = self._do_request(
+            "GET",
+            f"{SPOTIFY_API}/tracks?{uris}",
+            can_cache=False
+        )
+
+        # validate all TrackObjects
+        return [schemas.SpotifyTrackObject.model_validate(track) for track in resp.json()["tracks"]]
 
     def _do_request(
             self,
