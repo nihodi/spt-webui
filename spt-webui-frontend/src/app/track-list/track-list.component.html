@@ -14,7 +14,15 @@
 				<div>
 					<a class="track-name" [href]="track.external_urls.spotify">{{ track.name }}</a>
 					<div class="track-artists">
-						{{ artists()[$index] }}
+
+						@for (artist of tracks()[$index].artists; track $index) {
+							<a [href]="artist.external_urls.spotify">{{ artist.name }}</a>
+							@if (!$last) {
+								<span>,</span>
+							}
+						}
+
+
 					</div>
 				</div>
 			</td>

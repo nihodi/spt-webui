@@ -10,8 +10,4 @@ import { TrackObject } from "../api-services/models";
 })
 export class TrackCardComponent {
 	track = input.required<TrackObject>();
-
-	artists = computed(() => {
-		return this.track().artists.map(x => x.name).join(", ");
-	});
 }
