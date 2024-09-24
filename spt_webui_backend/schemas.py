@@ -102,3 +102,8 @@ class SpotifyPlaybackState(BaseModel):
 class SpotifyQueue(BaseModel):
     currently_playing: Optional[SpotifyTrackObject]
     queue: List[SpotifyTrackObject]
+
+
+class ApiStats(BaseModel):
+
+    total_requests: int

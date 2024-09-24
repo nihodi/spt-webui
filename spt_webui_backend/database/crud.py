@@ -119,3 +119,10 @@ def add_song_request(db: Session, spotify_track: schemas.SpotifyTrackObject, use
 
 
 
+def get_stats(db: Session) -> schemas.ApiStats:
+    total_requests = db.execute(sa.select(sa.func.count(models.RequestedSpotifySongArtist.id))).scalar()
+
+    return schemas.ApiStats.model_validate({
+        'total_requests': total_requests,
+    })
+
