@@ -1,5 +1,5 @@
 import datetime
-from typing import List, Set
+from typing import List, Set, Optional
 
 import sqlalchemy as sa
 import sqlalchemy.orm
@@ -62,6 +62,10 @@ class RequestedSpotifySongArtist(Base):
     id: Mapped[int] = mapped_column(sa.Integer, primary_key=True)
     spotify_id: Mapped[str] = mapped_column(sa.String(50), unique=True, nullable=False)
     spotify_name: Mapped[str] = mapped_column(sa.Unicode(255), nullable=False)
+
+    spotify_large_image_link: Mapped[Optional[str]] = mapped_column(sa.String(255), nullable=True)
+    spotify_small_image_link: Mapped[Optional[str]] = mapped_column(sa.String(255), nullable=True)
+
 
     spotify_requested_songs: Mapped[Set[RequestedSpotifySong]] = sa.orm.relationship(
         secondary=spotify_songs_artists_association_table,

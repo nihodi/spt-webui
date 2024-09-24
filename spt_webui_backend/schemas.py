@@ -25,6 +25,12 @@ class SpotifyExternalUrls(BaseModel):
     spotify: str
 
 
+class SpotifyImageObject(BaseModel):
+    url: str
+    width: int
+    height: int
+
+
 class SpotifySimplifiedArtistObject(BaseModel):
     href: str
     id: str
@@ -36,10 +42,15 @@ class SpotifySimplifiedArtistObject(BaseModel):
     external_urls: SpotifyExternalUrls
 
 
-class SpotifyImageObject(BaseModel):
-    url: str
-    width: int
-    height: int
+class SpotifyArtistObject(SpotifySimplifiedArtistObject):
+    class Followers(BaseModel):
+        total: int
+
+    followers: Followers
+    genres: List[str]
+    popularity: int
+
+    images: List[SpotifyImageObject]
 
 
 class SpotifyTrackObject(BaseModel):
@@ -74,7 +85,6 @@ class SpotifyTrackObject(BaseModel):
         name: str
         release_date: str
         type: Literal["album"]
-
 
     album: Album
 
@@ -111,6 +121,7 @@ class DbSpotifyArtist(BaseModel):
     class Config:
         from_attributes = True
 
+
 class DbSpotifySong(BaseModel):
     spotify_name: str
     spotify_id: str
@@ -128,10 +139,8 @@ class DbSpotifySong(BaseModel):
 
 
 class ApiStats(BaseModel):
-
     total_requests: int
     total_listened: int
-
 
     class DateRequestCount(BaseModel):
         date: datetime.date
@@ -151,6 +160,5 @@ class ApiStats(BaseModel):
     class RequestedSong(BaseModel):
         song: DbSpotifySong
         request_count: int
-
 
     most_requested_songs: List[RequestedSong]

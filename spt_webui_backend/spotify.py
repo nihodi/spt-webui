@@ -10,8 +10,8 @@ from starlette import status
 from spt_webui_backend import schemas, oauth2
 from spt_webui_backend.schemas import SpotifyTrackObject
 
-
 SPOTIFY_API = "https://api.spotify.com/v1"
+
 
 def get_track_id_from_shared_url(
         url: str
@@ -127,11 +127,26 @@ class Spotify:
         resp = self._do_request(
             "GET",
             f"{SPOTIFY_API}/tracks?{uris}",
-            can_cache=False
+            can_cache=True
         )
 
         # validate all TrackObjects
         return [schemas.SpotifyTrackObject.model_validate(track) for track in resp.json()["tracks"]]
+
+    def get_artists(self, ids: Sequence[str]) -> List[schemas.SpotifyArtistObject]:
+        if len(ids) > 50:
+            raise ValueError("ids must not be longer than 50")
+
+        uris = urllib.parse.urlencode({"ids": ",".join(ids)})
+
+        resp = self._do_request(
+            "GET",
+            f"{SPOTIFY_API}/artists?{uris}",
+            can_cache=True
+        )
+
+        # validate all TrackObjects
+        return [schemas.SpotifyArtistObject.model_validate(track) for track in resp.json()["artists"]]
 
     def _do_request(
             self,
