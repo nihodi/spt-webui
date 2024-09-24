@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from "@angular/common/http";
 import { Observable } from "rxjs";
 import { environment } from "../../environments/environment";
-import { PlaybackState, SpotifyQueue, TrackObject } from "./models";
+import { ApiStats, PlaybackState, SpotifyQueue, TrackObject } from "./models";
 
 @Injectable({
 	providedIn: 'root'
@@ -29,5 +29,9 @@ export class SptWebUiApiWrapperService {
 				url
 			}
 		});
+	}
+
+	getStats(): Observable<ApiStats> {
+		return this.httpClient.get<ApiStats>(`${environment.api_prefix}/stats`);
 	}
 }
