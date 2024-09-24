@@ -107,3 +107,4 @@ class SpotifyQueue(BaseModel):
 class ApiStats(BaseModel):
 
     total_requests: int
+    total_listened: int

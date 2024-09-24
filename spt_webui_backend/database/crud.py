@@ -129,7 +129,17 @@ def add_song_request(db: Session, spotify_track: schemas.SpotifyTrackObject, use
 def get_stats(db: Session) -> schemas.ApiStats:
     total_requests = db.execute(sa.select(sa.func.count(models.RequestedSpotifySongArtist.id))).scalar()
 
+    total_listened = db.execute(
+        sa.select(
+            sa.func.sum(models.RequestedSpotifySong.length_ms)
+        )
+        .select_from(models.SongRequest)
+        .join(models.RequestedSpotifySong, models.SongRequest.requested_song_id == models.RequestedSpotifySong.id)
+    ).scalar()
+
+
     return schemas.ApiStats.model_validate({
-        'total_requests': total_requests,
+        "total_requests": total_requests,
+        "total_listened": total_listened
     })
 
