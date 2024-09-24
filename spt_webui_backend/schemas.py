@@ -1,5 +1,5 @@
 import datetime
-from typing import Literal, List, Optional
+from typing import Literal, List, Optional, Tuple
 
 from pydantic import BaseModel
 
@@ -108,3 +108,5 @@ class ApiStats(BaseModel):
 
     total_requests: int
     total_listened: int
+
+    song_request_timestamps: List[datetime.datetime]
