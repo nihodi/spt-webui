@@ -284,7 +284,7 @@ def get_spotify_playback_queue(
     return spotify_instance.get_playback_queue()
 
 
-@router.get("/stats")
+@router.get("/stats", response_model=schemas.ApiStats)
 def get_stats(
         db: sa.orm.Session = fastapi.Depends(database.get_db)
 ):
