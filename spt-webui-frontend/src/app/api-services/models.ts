@@ -105,3 +105,46 @@ export function millisecondsToTimeString(ms: number): string {
 	else
 		return `${minutes}:${seconds}`;
 }
+interface DbArtist {
+	spotify_name: string;
+	spotify_id: string;
+
+	spotify_large_image_link: string;
+	spotify_small_image_link: string;
+}
+
+interface DbSong {
+	spotify_name: string;
+	spotify_id: string;
+
+	spotify_large_image_link: string;
+	spotify_small_image_link: string;
+
+	explicit: boolean;
+
+	length_ms: number;
+	spotify_artists: DbArtist[];
+}
+
+
+
+export interface ApiStats {
+	total_requests: number;
+	total_ms_listened: number;
+
+	requests_grouped_by_date: {
+		date: string;
+		request_count: number;
+	}[];
+
+	most_requested_artists: {
+		artist: DbArtist;
+
+		request_count: number;
+	}[];
+
+	most_requested_songs: {
+		song: DbSong;
+		request_count: number;
+	}[];
+}
