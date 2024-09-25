@@ -13,13 +13,15 @@ import { SptWebUiApiWrapperService } from "../../api-services/spt-web-ui-api-wra
 import { PlaybackStateService } from "../../state-services/playback-state.service";
 import { HttpErrorResponse } from "@angular/common/http";
 import { TrackCardComponent } from "../../track-card/track-card.component";
-import { AsyncPipe } from "@angular/common";
+import { AsyncPipe, JsonPipe } from "@angular/common";
 import { TrackListComponent } from "../../track-list/track-list.component";
 import { AuthService } from "../../state-services/auth.service";
 import { Subscription } from "rxjs";
 import { NotificationsService } from "../../notifications.service";
 import { PlaybackStateDisplayComponent } from "../../playback-state-display/playback-state-display.component";
 import { SpinnerComponent } from "../../spinner/spinner.component";
+import { StatsStateService } from "../../api-services/stats-state.service";
+import { RollingCounterComponent } from "../../rolling-counter/rolling-counter.component";
 
 const matchesSpotifyUrl: ValidatorFn = (control: AbstractControl): ValidationErrors | null => {
 	const regex = /https:\/\/open.spotify.com\/track\/[a-zA-Z0-9]+/g;
@@ -42,7 +44,9 @@ const matchesSpotifyUrl: ValidatorFn = (control: AbstractControl): ValidationErr
 		ReactiveFormsModule,
 		TrackListComponent,
 		PlaybackStateDisplayComponent,
-		SpinnerComponent
+		SpinnerComponent,
+		JsonPipe,
+		RollingCounterComponent
 	],
 	templateUrl: './index.component.html',
 	styleUrl: './index.component.sass'
@@ -53,7 +57,8 @@ export class IndexComponent {
 		private apiWrapper: SptWebUiApiWrapperService,
 		protected playbackState: PlaybackStateService,
 		protected authService: AuthService,
-		private notificationsService: NotificationsService
+		private notificationsService: NotificationsService,
+		protected statsService: StatsStateService
 	) {
 		this.addToQueueForm = this.fb.group({
 			url: ['', [Validators.required, matchesSpotifyUrl]]
@@ -110,5 +115,13 @@ export class IndexComponent {
 				});
 			}
 		});
+	}
+
+	msToDaysHoursMinutes = (value: number): string => {
+		const days = Math.floor(value / (60 * 60 * 24 * 1000));
+		const hours = Math.floor((value - (days * 60 * 60 * 24 * 1000)) / (60 * 60 * 1000));
+		const minutes = Math.floor((value - (hours * 60 * 60 * 1000) - (days * 60 * 60 * 24 * 1000)) / (60 * 1000));
+
+		return `${days}d ${hours}h ${minutes}m`;
 	}
 }
