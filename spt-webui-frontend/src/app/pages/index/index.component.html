@@ -88,6 +88,11 @@
 				<div class="stat-display-simple-placeholder"></div>
 
 			}
+
+			<canvas baseChart type="line"
+					[data]="(statsService.currentStats$ | async)?.request_grouped_by_date_chartable"
+			>
+			</canvas>
 		} @else {
 			<app-spinner></app-spinner>
 		}

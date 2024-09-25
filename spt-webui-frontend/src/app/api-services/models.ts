@@ -1,3 +1,5 @@
+import { ChartConfiguration } from "chart.js";
+
 export interface SpotifySimplifiedArtistObject {
 	href: string;
 	id: string;
@@ -147,4 +149,9 @@ export interface ApiStats {
 		song: DbSong;
 		request_count: number;
 	}[];
+}
+
+
+export interface ChartableApiStats extends ApiStats {
+	request_grouped_by_date_chartable: ChartConfiguration["data"];
 }
