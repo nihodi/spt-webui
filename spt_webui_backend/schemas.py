@@ -118,8 +118,8 @@ class DbSpotifyArtist(BaseModel):
     spotify_name: str
     spotify_id: str
 
-    spotify_large_image_link: str
-    spotify_small_image_link: str
+    spotify_large_image_link: Optional[str]
+    spotify_small_image_link: Optional[str]
 
     class Config:
         from_attributes = True
