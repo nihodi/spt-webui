@@ -9,25 +9,24 @@
 		<tr>
 			<td>{{ $index + 1 }}</td>
 			<td class="title-and-artist">
-				<img [src]="track.album.images.at(track.album.images.length - 1)?.url" alt="Album cover">
+				<img [src]="track.spotify_large_image_link" alt="Album cover">
 
 				<div>
-					<a class="track-name" [href]="track.external_urls.spotify">{{ track.name }}</a>
-					<div class="track-artists">
+					<a class="track()-name"
+					   [href]="'https://open.spotify.com/track()/' + track.spotify_id">{{ track.spotify_name }}</a>
+					<div class="track()-artists">
 
-						@for (artist of tracks()[$index].artists; track $index) {
-							<a [href]="artist.external_urls.spotify">{{ artist.name }}</a>
+						@for (artist of track.spotify_artists; track $index) {
+							<a [href]="'https://open.spotify.com/artist/' + artist.spotify_id">{{ artist.name }}</a>
 							@if (!$last) {
 								<span>, </span>
 							}
 						}
-
-
 					</div>
 				</div>
 			</td>
 
-			<td>{{millisecondsToTimeString(track.duration_ms) }}</td>
+			<td>{{ millisecondsToTimeString(track.length_ms) }}</td>
 		</tr>
 	}
 </table>

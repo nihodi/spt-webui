@@ -31,7 +31,7 @@
 
 		<section>
 			<h1>Current queue:</h1>
-			@if ((playbackState.queue$ | async)?.queue !== undefined) {
+			@if ((playbackState.queue$ | async)?.queue !== undefined && (playbackState.queue$ | async)?.queue !== null) {
 				<app-track-list [tracks]="(playbackState.queue$ | async)?.queue!"></app-track-list>
 			}
 		</section>
@@ -89,10 +89,19 @@
 
 			}
 
+			<hr>
+
+			<h2>Requests by date</h2>
 			<canvas baseChart type="line"
 					[data]="(statsService.currentStats$ | async)?.request_grouped_by_date_chartable"
 			>
 			</canvas>
+
+			<hr>
+
+			<h2>Most popular songs</h2>
+			<app-app-popular-tracks-list [tracks]="(statsService.currentStats$ | async)?.most_requested_songs!"></app-app-popular-tracks-list>
+
 		} @else {
 			<app-spinner></app-spinner>
 		}

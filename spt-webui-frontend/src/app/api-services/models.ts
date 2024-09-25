@@ -107,7 +107,7 @@ export function millisecondsToTimeString(ms: number): string {
 	else
 		return `${minutes}:${seconds}`;
 }
-interface DbArtist {
+export interface DbArtist {
 	spotify_name: string;
 	spotify_id: string;
 
@@ -115,7 +115,7 @@ interface DbArtist {
 	spotify_small_image_link: string;
 }
 
-interface DbSong {
+export interface DbSong {
 	spotify_name: string;
 	spotify_id: string;
 
@@ -154,4 +154,70 @@ export interface ApiStats {
 
 export interface ChartableApiStats extends ApiStats {
 	request_grouped_by_date_chartable: ChartConfiguration["data"];
+}
+
+
+function isTrackObject(object: TrackObject | DbSong): object is TrackObject {
+	return "album" in object;
+}
+
+function isSpotifySimplifiedArtistObject(object: SpotifySimplifiedArtistObject | DbArtist): object is SpotifySimplifiedArtistObject {
+	return "external_urls" in object;
+}
+
+export interface CommonArtist {
+	name: string;
+	spotify_id: string;
+}
+
+export interface CommonSong {
+	spotify_name: string;
+	spotify_id: string;
+
+	spotify_large_image_link: string;
+	spotify_small_image_link: string;
+
+	explicit: boolean;
+
+	length_ms: number;
+	spotify_artists: CommonArtist[];
+}
+
+export function toCommonArtist(artist: SpotifySimplifiedArtistObject | DbArtist): CommonArtist {
+	if (isSpotifySimplifiedArtistObject(artist)) {
+		return {
+			name: artist.name,
+			spotify_id: artist.id
+		}
+
+	} else {
+		return {
+			name: artist.spotify_name,
+			spotify_id: artist.spotify_id,
+		};
+	}
+}
+
+export function toCommonSong(track: TrackObject | DbSong): CommonSong {
+	if (isTrackObject(track)) {
+		return {
+			spotify_name: track.name,
+			spotify_id: track.id,
+			spotify_artists: track.artists.map(x => toCommonArtist(x)),
+			explicit: track.explicit,
+			length_ms: track.duration_ms,
+			spotify_large_image_link: track.album.images.at(0)?.url!,
+			spotify_small_image_link: track.album.images.at(track.album.images.length - 1)?.url!,
+		}
+	} else {
+		return {
+			explicit: track.explicit,
+			length_ms: track.length_ms,
+			spotify_artists: track.spotify_artists.map(x => toCommonArtist(x)),
+			spotify_id: track.spotify_id,
+			spotify_large_image_link: track.spotify_large_image_link,
+			spotify_small_image_link: track.spotify_small_image_link,
+			spotify_name: track.spotify_name
+		};
+	}
 }

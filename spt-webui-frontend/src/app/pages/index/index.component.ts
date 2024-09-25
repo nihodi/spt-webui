@@ -23,6 +23,7 @@ import { SpinnerComponent } from "../../spinner/spinner.component";
 import { StatsStateService } from "../../api-services/stats-state.service";
 import { RollingCounterComponent } from "../../rolling-counter/rolling-counter.component";
 import { BaseChartDirective } from "ng2-charts";
+import { AppPopularTracksListComponent } from "../../app-popular-tracks-list/app-popular-tracks-list.component";
 
 const matchesSpotifyUrl: ValidatorFn = (control: AbstractControl): ValidationErrors | null => {
 	const regex = /https:\/\/open.spotify.com\/track\/[a-zA-Z0-9]+/g;
@@ -48,7 +49,8 @@ const matchesSpotifyUrl: ValidatorFn = (control: AbstractControl): ValidationErr
 		SpinnerComponent,
 		JsonPipe,
 		RollingCounterComponent,
-		BaseChartDirective
+		BaseChartDirective,
+		AppPopularTracksListComponent
 	],
 	templateUrl: './index.component.html',
 	styleUrl: './index.component.sass'

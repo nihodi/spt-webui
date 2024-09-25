@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from "rxjs";
-import { ApiStats, ChartableApiStats } from "./models";
+import { ChartableApiStats } from "./models";
 import { SptWebUiApiWrapperService } from "./spt-web-ui-api-wrapper.service";
 import { ChartConfiguration } from "chart.js";
 
@@ -36,8 +36,6 @@ export class StatsStateService {
 						}
 					]
 				};
-
-				console.log(chartable_requests);
 
 				this._currentStats.next({request_grouped_by_date_chartable: chartable_requests, ...value});
 			}
