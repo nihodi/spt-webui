@@ -58,24 +58,36 @@
 
 		@if ((statsService.currentStats$ | async) !== null) {
 
-			<div class="stat-display-simple">
-				<h3>
-					<app-rolling-counter
-						[value]="(statsService.currentStats$ | async)?.total_requests!"
-					></app-rolling-counter>
-				</h3>
-				<div>Total requests</div>
-			</div>
+			@defer (on viewport) {
+				<div class="stat-display-simple">
+					<h3>
+						<app-rolling-counter
+							[value]="(statsService.currentStats$ | async)?.total_requests!"
+						></app-rolling-counter>
+					</h3>
+					<div>Total requests</div>
+				</div>
+			} @placeholder {
+				<div class="stat-display-simple-placeholder"></div>
+			}
+
+
 			<hr>
-			<div class="stat-display-simple">
-				<h3>
-					<app-rolling-counter
-						[value]="60 * 60 * 24 * 1000"
-						[format]="msToDaysHoursMinutes"
-					></app-rolling-counter>
-				</h3>
-				<div>Total time listened</div>
-			</div>
+
+			@defer (on viewport) {
+				<div class="stat-display-simple">
+					<h3>
+						<app-rolling-counter
+							[value]="60 * 60 * 24 * 1000"
+							[format]="msToDaysHoursMinutes"
+						></app-rolling-counter>
+					</h3>
+					<div>Total time listened</div>
+				</div>
+			} @placeholder {
+				<div class="stat-display-simple-placeholder"></div>
+
+			}
 		} @else {
 			<app-spinner></app-spinner>
 		}
