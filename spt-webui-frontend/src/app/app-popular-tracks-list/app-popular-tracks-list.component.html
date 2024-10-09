@@ -13,8 +13,8 @@
 				<img [src]="track.song.spotify_large_image_link" alt="Album cover">
 
 				<div>
-					<a class="track()-name" [href]="'https://open.spotify.com/track()/' + track.song.spotify_id">{{ track.song.spotify_name }}</a>
-					<div class="track()-artists">
+					<a class="track-name" [href]="'https://open.spotify.com/track/' + track.song.spotify_id">{{ track.song.spotify_name }}</a>
+					<div class="track-artists">
 
 						@for (artist of track.song.spotify_artists; track $index) {
 							<a [href]="'https://open.spotify.com/artist/' + artist.spotify_id">{{ artist.spotify_name }}</a>
