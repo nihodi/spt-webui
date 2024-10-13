@@ -20,20 +20,20 @@ export interface SpotifyImageObject {
 }
 
 export interface TrackObject {
-    id: string;
+	id: string;
 
-    duration_ms: number;
-    name: string;
-    popularity: number;
-    explicit: boolean;
+	duration_ms: number;
+	name: string;
+	popularity: number;
+	explicit: boolean;
 
 	artists: SpotifySimplifiedArtistObject[];
 
-    external_urls: {
-        spotify: string;
-    }
-    href: string;
-    uri: string;
+	external_urls: {
+		spotify: string;
+	}
+	href: string;
+	uri: string;
 
 	album: {
 		id: string;
@@ -55,10 +55,14 @@ export interface TrackObject {
 	}
 
 
-    type: "track";
+	type: "track";
 
 
-    is_local: boolean;
+	is_local: boolean;
+}
+
+export interface QueueTrackObject extends TrackObject {
+	queue_type: "queue" | "next_up";
 }
 
 export interface SpotifyContextObject {
@@ -88,7 +92,7 @@ export interface PlaybackState {
 
 export interface SpotifyQueue {
 	currently_playing: TrackObject | null;
-	queue: TrackObject[];
+	queue: QueueTrackObject[];
 }
 
 export interface UserData {
@@ -99,14 +103,15 @@ export interface UserData {
 }
 
 export function millisecondsToTimeString(ms: number): string {
-	const minutes = Math.floor(ms  / 60000);
+	const minutes = Math.floor(ms / 60000);
 	const seconds = Math.floor((ms % 60000) / 1000);
 
 	if (seconds < 10)
-		return `${minutes}:0${seconds}`;
+		return `${ minutes }:0${ seconds }`;
 	else
-		return `${minutes}:${seconds}`;
+		return `${ minutes }:${ seconds }`;
 }
+
 export interface DbArtist {
 	spotify_name: string;
 	spotify_id: string;
@@ -127,7 +132,6 @@ export interface DbSong {
 	length_ms: number;
 	spotify_artists: DbArtist[];
 }
-
 
 
 export interface ApiStats {

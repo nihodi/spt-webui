@@ -14,7 +14,30 @@ export class PlaybackStateService {
 	playbackState$ = this._playbackState.asObservable();
 
 	private _spotifyQueue: BehaviorSubject<SpotifyQueue | null> = new BehaviorSubject<SpotifyQueue | null>(null);
-	queue$ = this._spotifyQueue.asObservable();
+	fullQueue$ = this._spotifyQueue.asObservable();
+
+	trueQueue$ = this.fullQueue$.pipe(map(queue => {
+		if (queue === null)
+			return null;
+
+		// creates a new object, instead of modifying the existing one
+		// prevents unwanted side effects
+		return {
+			...queue,
+			queue: queue.queue.filter(track => track.queue_type === "queue")
+		};
+	}));
+
+	nextUpQueue$ = this.fullQueue$.pipe(map(queue => {
+		if (queue === null)
+			return null;
+
+
+		return {
+			...queue,
+			queue: queue.queue.filter(track => track.queue_type === "next_up")
+		};
+	}));
 
 	isPlaying$ = this._playbackState.pipe(map(v => v !== null));
 

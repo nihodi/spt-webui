@@ -31,8 +31,18 @@
 
 		<section>
 			<h1>Current queue:</h1>
-			@if ((playbackState.queue$ | async) !== null) {
-				<app-track-list [tracks]="(playbackState.queue$ | async)?.queue!"></app-track-list>
+			@if ((playbackState.trueQueue$ | async) !== null) {
+				@if ((playbackState.trueQueue$ | async)?.queue!.length > 0) {
+					<app-track-list [tracks]="(playbackState.trueQueue$ | async)?.queue!"></app-track-list>
+				} @else {
+					<p>The queue is empty. Request your song to hear it instantly!</p>
+				}
+			}
+
+			<h2>Next up:</h2>
+			<p>Songs that play when the queue is empty.</p>
+			@if ((playbackState.trueQueue$ | async) !== null) {
+				<app-track-list [tracks]="(playbackState.nextUpQueue$ | async)?.queue!"></app-track-list>
 			}
 		</section>
 
@@ -100,7 +110,8 @@
 			<hr>
 
 			<h2>Most popular songs</h2>
-			<app-app-popular-tracks-list [tracks]="(statsService.currentStats$ | async)?.most_requested_songs!"></app-app-popular-tracks-list>
+			<app-app-popular-tracks-list
+				[tracks]="(statsService.currentStats$ | async)?.most_requested_songs!"></app-app-popular-tracks-list>
 
 		} @else {
 			<app-spinner></app-spinner>
