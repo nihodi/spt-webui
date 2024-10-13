@@ -20,7 +20,7 @@ import { Subscription } from "rxjs";
 import { NotificationsService } from "../../notifications.service";
 import { PlaybackStateDisplayComponent } from "../../playback-state-display/playback-state-display.component";
 import { SpinnerComponent } from "../../spinner/spinner.component";
-import { StatsStateService } from "../../api-services/stats-state.service";
+import { StatsStateService } from "../../state-services/stats-state.service";
 import { RollingCounterComponent } from "../../rolling-counter/rolling-counter.component";
 import { BaseChartDirective } from "ng2-charts";
 import { AppPopularTracksListComponent } from "../../app-popular-tracks-list/app-popular-tracks-list.component";

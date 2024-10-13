@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from "rxjs";
-import { ChartableApiStats } from "./models";
-import { SptWebUiApiWrapperService } from "./spt-web-ui-api-wrapper.service";
+import { ChartableApiStats } from "../api-services/models";
+import { SptWebUiApiWrapperService } from "../api-services/spt-web-ui-api-wrapper.service";
 import { ChartConfiguration } from "chart.js";
 
 @Injectable({
