@@ -7,6 +7,7 @@ from typing import Optional, Annotated
 import fastapi
 import requests
 import requests_oauthlib
+import sentry_sdk
 import sqlalchemy as sa
 import sqlalchemy.orm
 from fastapi import Query, APIRouter
@@ -22,6 +23,15 @@ import spt_webui_backend.database.migrate
 from spt_webui_backend import oauth2, spotify, security, schemas
 from spt_webui_backend.environment import ENVIRONMENT
 from spt_webui_backend.schemas import AccessToken
+
+
+# initialize sentry
+if ENVIRONMENT.sentry_dsn:
+    sentry_sdk.init(
+        dsn=ENVIRONMENT.sentry_dsn,
+        traces_sample_rate=1.0,
+    )
+
 
 middleware = [
     Middleware(

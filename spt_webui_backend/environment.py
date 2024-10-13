@@ -30,6 +30,8 @@ class Settings(BaseSettings):
 
     api_prefix: str = ""
 
+    sentry_dsn: Optional[str] = None
+
     class Config:
         env_file = ".env"
 
