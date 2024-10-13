@@ -31,7 +31,7 @@
 
 		<section>
 			<h1>Current queue:</h1>
-			@if ((playbackState.queue$ | async)?.queue !== undefined && (playbackState.queue$ | async)?.queue !== null) {
+			@if ((playbackState.queue$ | async) !== null) {
 				<app-track-list [tracks]="(playbackState.queue$ | async)?.queue!"></app-track-list>
 			}
 		</section>
