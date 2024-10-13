@@ -78,6 +78,7 @@ class Spotify:
         new_queue = []
         for track, time in self._recently_requested_songs:
             if resp.queue[found_index].uri == track.uri:
+                resp.queue[found_index].queue_type = "queue"
                 new_queue.append((track, time))
                 found_index += 1
             else:

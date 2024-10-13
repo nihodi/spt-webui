@@ -88,6 +88,8 @@ class SpotifyTrackObject(BaseModel):
 
     album: Album
 
+class QueueTrackObject(SpotifyTrackObject):
+    queue_type: Literal["queue", "next_up"] = "next_up"
 
 class SpotifyContextObject(BaseModel):
     type: Literal["artist", "playlist", "album", "show"]
@@ -111,7 +113,7 @@ class SpotifyPlaybackState(BaseModel):
 
 class SpotifyQueue(BaseModel):
     currently_playing: Optional[SpotifyTrackObject]
-    queue: List[SpotifyTrackObject]
+    queue: List[QueueTrackObject]
 
 
 class DbSpotifyArtist(BaseModel):
