@@ -191,7 +191,7 @@ def get_spotify_playback_state(
 ):
     state = spotify_instance.get_playback_state()
     if state is None:
-        return JSONResponse(None, 204)
+        return fastapi.Response(status_code=204)
     return state
 
 
