@@ -10,6 +10,9 @@ mod api;
 pub(crate) struct SptWebuiSettings {
     discord_client_id: u64,
 	discord_redirect_uri: String,
+	
+	development_mode: bool,
+	frontend_url: String
 }
 
 

@@ -1,5 +1,7 @@
 {
 	"discord_client_id": 123,
 	"discord_client_secret": "some text",
-	"discord_redirect_uri": "http://localhost:8000/auth/callback/discord"
+	"discord_redirect_uri": "http://localhost:8000/auth/callback/discord",
+	"development_mode": true,
+	"frontend_url": "http://localhost:4200"
 }
