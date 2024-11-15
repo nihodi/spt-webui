@@ -1,9 +1,6 @@
-use std::env::VarError;
-use dotenv::dotenv;
 use poem::listener::TcpListener;
 use poem::{EndpointExt, Route, Server};
-use poem::middleware::AddData;
-use poem_openapi::{param::Path, payload::PlainText, OpenApi, OpenApiService};
+use poem_openapi::{OpenApiService};
 use serde::Deserialize;
 
 mod api;
