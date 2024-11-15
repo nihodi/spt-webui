@@ -15,7 +15,7 @@ enum AuthRedirectResponse {
 #[OpenApi(prefix_path = "/auth")]
 impl AuthApi {
     #[oai(path = "/setup/discord", method = "get")]
-    async fn hello(
+    async fn discord_redirect(
 		&self,
 		settings: Data<&SptWebuiSettings>
 
