@@ -7,20 +7,26 @@ pub(crate) struct AuthApi;
 
 #[derive(ApiResponse)]
 enum AuthRedirectResponse {
+	/// Redirect to Discord OAuth
     #[oai(status = 307)]
-    Ok(#[oai(header = "Location")] String),
+	DiscordOk(
+		/// URL to Discord OAuth
+		/// `https://discord.com/oauth2/authorize`
+		#[oai(header = "Location")] String
+	),
 }
 
 
 #[OpenApi(prefix_path = "/auth")]
 impl AuthApi {
+
     #[oai(path = "/setup/discord", method = "get")]
     async fn discord_redirect(
 		&self,
 		settings: Data<&SptWebuiSettings>
 
 	) -> AuthRedirectResponse {
-        AuthRedirectResponse::Ok(
+        AuthRedirectResponse::DiscordOk(
             url::Url::parse_with_params(
                 "https://discord.com/oauth2/authorize",
                 [
