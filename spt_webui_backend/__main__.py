@@ -1,6 +1,7 @@
 import datetime
 import json
 import urllib.parse
+import uvicorn
 from contextlib import asynccontextmanager
 from typing import Optional, Annotated
 
@@ -301,3 +302,10 @@ def get_stats(
     return crud.get_stats(db)
 
 app.include_router(router, prefix=ENVIRONMENT.api_prefix)
+
+def main():
+    uvicorn.run(app, host="0.0.0.0", port=ENVIRONMENT.port)
+
+
+if __name__ == "__main__":
+    main()

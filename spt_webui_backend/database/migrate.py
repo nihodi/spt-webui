@@ -1,3 +1,5 @@
+import pathlib
+
 import alembic.config
 import alembic.migration
 import alembic.command
@@ -7,7 +9,8 @@ from spt_webui_backend.database import models
 
 
 def migrate_to_head() -> None:
-    alembic_config = alembic.config.Config("alembic.ini")
+    alembic_config = alembic.config.Config(f"{pathlib.Path(__file__).parent}/alembic.ini")
+    alembic_config.set_section_option("alembic", "script_location", f"{pathlib.Path(__file__).parent}/alembic_scripts")
 
     # check if alembic migrations exist
     with engine.begin() as connection:

@@ -29,6 +29,7 @@ class Settings(BaseSettings):
     allowed_origin: str = "http://localhost:4200"
 
     api_prefix: str = ""
+    port: int = 8000
 
     sentry_dsn: Optional[str] = None
 
