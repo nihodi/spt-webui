@@ -30,7 +30,9 @@ in
     assertions =
       if cfg.enable then
         [
-
+          {
+            assertion = lib.hasAttrByPath ["settings" "environmentFiles"];
+          }
         ]
       else
         [ ];
