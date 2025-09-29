@@ -41,7 +41,7 @@ in
       after = [ "network.target" ];
 
       serviceConfig = {
-        ExecStart = "${inputs.self.packages.${system}.default}/bin/spt_webui_backend --env-files ${cfg.settings.environmentFile}";
+        ExecStart = "${inputs.self.packages.${system}.default}/bin/spt_webui_backend --env-file ${cfg.settings.environmentFile}";
       };
       wantedBy = [ "multi-user.target" ];
     };
