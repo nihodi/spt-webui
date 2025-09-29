@@ -63,7 +63,7 @@
 
     in
     {
-      nixosModules.spt-webui = import ./nix/module.nix inputs;
+      nixosModules.spt-webui = import ./nix/module.nix self;
 
 
       devShells = forAllSystems (
