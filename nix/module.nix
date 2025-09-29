@@ -1,5 +1,5 @@
-self:
-{ config, lib, pkgs }:
+inputs:
+{ config, lib, pkgs, ... }:
 
 let
 
@@ -13,6 +13,6 @@ in
   };
 
   config = lib.mkIf cfg.enable {
-    environment.systemPackages = [self.packages.${system}.default];
+    environment.systemPackages = [inputs.self.packages.${system}.default];
   };
 }
