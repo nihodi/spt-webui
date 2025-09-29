@@ -24,11 +24,12 @@
   };
 
   outputs =
-    {
+    inputs@{
       nixpkgs,
       uv2nix,
       pyproject-nix,
       pyproject-build-systems,
+      self,
       ...
     }:
     let
@@ -62,6 +63,9 @@
 
     in
     {
+      nixosModules.spt-webui = import ./nix/module.nix inputs;
+
+
       devShells = forAllSystems (
         system:
         let
@@ -96,6 +100,14 @@
             venv = pythonSet.mkVirtualEnv "application-env" workspace.deps.default;
             package = pythonSet.spt-webui;
           };
+
+          #          frontend = pkgs.buildNpmPackage {
+          #            pname = "spt-webui-frontend";
+          #            version = "0.0.0";
+          #            src = "${self}/spt-webui-frontend";
+          #
+          #            npmDepsHash = "sha256-wtBSP87okYx/nwo1EMImo2oF7c4lDnDE+0Z/i+GXG5U=";
+          #          };
         }
       );
     };
