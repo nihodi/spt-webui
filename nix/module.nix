@@ -1,5 +1,10 @@
 inputs:
-{ config, lib, pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 
 let
 
@@ -15,10 +20,10 @@ in
   config = lib.mkIf cfg.enable {
     systemd.services.spt-webui = {
       description = "spt-webui backend";
-      after = "network.target";
+      after = [ "network.target" ];
 
       script = "${inputs.self.packages.${system}.default}/bin/spt_webui_backend";
-      wantedBy = "multi-user.target";
+      wantedBy = [ "multi-user.target" ];
     };
   };
 }
