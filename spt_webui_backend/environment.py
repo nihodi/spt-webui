@@ -1,6 +1,6 @@
 from typing import Optional
 
-from pydantic_settings import BaseSettings
+from pydantic_settings import BaseSettings, JsonConfigSettingsSource, PydanticBaseSettingsSource
 
 
 class Settings(BaseSettings):
@@ -33,8 +33,21 @@ class Settings(BaseSettings):
 
     sentry_dsn: Optional[str] = None
 
+    @classmethod
+    def settings_customise_sources(
+            cls,
+            settings_cls: type[BaseSettings],
+            init_settings: PydanticBaseSettingsSource,
+            env_settings: PydanticBaseSettingsSource,
+            dotenv_settings: PydanticBaseSettingsSource,
+            file_secret_settings: PydanticBaseSettingsSource,
+    ) -> tuple[PydanticBaseSettingsSource, ...]:
+        # use json file as last priority settings source
+        return init_settings, env_settings, dotenv_settings, file_secret_settings, JsonConfigSettingsSource(settings_cls)
+
     class Config:
         env_file = ".env"
+        json_file = "/etc/spt-webui/settings.json" # TODO: make a CLI parameter?
 
 
 ENVIRONMENT: Settings = Settings()
