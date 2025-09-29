@@ -43,7 +43,7 @@ in
       after = [ "network.target" ];
 
       serviceConfig = {
-        ExecStart = "${inputs.self.packages.${system}.default}/bin/spt_webui_backend --env-files ${lib.concatStringsSep cfg.environmentFiles "--env-files"}";
+        ExecStart = "${inputs.self.packages.${system}.default}/bin/spt_webui_backend --env-files ${lib.concatStringsSep cfg.settings.environmentFiles "--env-files"}";
       };
       wantedBy = [ "multi-user.target" ];
     };
