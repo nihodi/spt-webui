@@ -13,6 +13,12 @@ in
   };
 
   config = lib.mkIf cfg.enable {
-    environment.systemPackages = [inputs.self.packages.${system}.default];
+    systemd.services.spt-webui = {
+      description = "spt-webui backend";
+      after = "network.target";
+
+      script = "${inputs.self.packages.${system}.default}/bin/spt_webui_backend";
+      wantedBy = "multi-user.target";
+    };
   };
 }
