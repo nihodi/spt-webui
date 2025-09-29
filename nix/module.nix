@@ -30,10 +30,6 @@ in
     assertions =
       if cfg.enable then
         [
-          {
-            assertion = false;
-            message = "test assertion :)";
-          }
 
         ]
       else
