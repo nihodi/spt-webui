@@ -31,7 +31,7 @@ in
       if cfg.enable then
         [
           {
-            assertion = lib.hasAttrByPath ["settings" "environmentFiles"];
+            assertion = lib.hasAttr "environmentFiles" cfg.settings;
           }
         ]
       else
