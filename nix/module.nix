@@ -15,6 +15,15 @@ in
 
   options.services.spt-webui = {
     enable = lib.mkEnableOption "spt-webui-backend";
+
+    settings = {
+
+      # TODO: declare settings other than this
+      environmentFiles = lib.mkOption {
+        type = lib.types.listOf lib.types.path;
+        description = "File to load as environment. Used to configure secret options.";
+      };
+    };
   };
 
   config = lib.mkIf cfg.enable {
@@ -35,7 +44,9 @@ in
       description = "spt-webui backend";
       after = [ "network.target" ];
 
-      script = "${inputs.self.packages.${system}.default}/bin/spt_webui_backend";
+      serviceConfig = {
+        ExecStart = "${inputs.self.packages.${system}.default}/bin/spt_webui_backend --env-files ${lib.concatStringsSep cfg.environmentFiles "--env-files"}";
+      };
       wantedBy = [ "multi-user.target" ];
     };
   };
