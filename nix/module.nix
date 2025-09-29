@@ -18,7 +18,7 @@ in
   };
 
   config = lib.mkIf cfg.enable {
-    iassertions =
+    assertions =
       if cfg.enable then
         [
           {
