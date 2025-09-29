@@ -3,7 +3,7 @@ inputs:
 
 let
 
-  cfg = config.options.services.spt-webui;
+  cfg = config.services.spt-webui;
   inherit (pkgs.stdenv.hostPlatform) system;
 in
 {
