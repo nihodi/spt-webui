@@ -18,6 +18,19 @@ in
   };
 
   config = lib.mkIf cfg.enable {
+    assertions =
+      if cfg.enable then
+        [
+          {
+            assertion = false;
+            message = "test assertion :)";
+          }
+
+        ]
+      else
+        [ ];
+
+    # FIXME: MAKE UNPRIVILEGED spt-webui USER SO THE BACKEND DOES NOT RUN AS ROOT!!
     systemd.services.spt-webui = {
       description = "spt-webui backend";
       after = [ "network.target" ];
