@@ -19,6 +19,8 @@ in
     settings = {
 
       # TODO: declare settings other than this
+      # - port
+      # everything else in the Environment class
       environmentFile = lib.mkOption {
         type = lib.types.path;
         description = "File to load as environment. Used to configure secret options.";
@@ -41,9 +43,23 @@ in
       after = [ "network.target" ];
 
       serviceConfig = {
-        ExecStart = "${inputs.self.packages.${system}.default}/bin/spt_webui_backend --env-file ${cfg.settings.environmentFile}";
+        User = "spt-webui-backend";
+        Group = "spt-webui-backend";
+
+        ExecStart = "${
+          inputs.self.packages.${system}.default
+        }/bin/spt_webui_backend --env-file ${cfg.settings.environmentFile}";
       };
       wantedBy = [ "multi-user.target" ];
+    };
+
+    users.users.spt-webui-backend = {
+      isSystemUser = true;
+      group = "spt-webui-backend";
+    };
+
+    users.groups.spt-webui-backend = {
+
     };
   };
 }
