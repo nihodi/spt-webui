@@ -19,8 +19,8 @@ in
     settings = {
 
       # TODO: declare settings other than this
-      environmentFiles = lib.mkOption {
-        type = lib.types.listOf lib.types.path;
+      environmentFile = lib.mkOption {
+        type = lib.types.path;
         description = "File to load as environment. Used to configure secret options.";
       };
     };
@@ -30,9 +30,7 @@ in
     assertions =
       if cfg.enable then
         [
-          {
-            assertion = lib.hasAttr "environmentFiles" cfg.settings;
-          }
+
         ]
       else
         [ ];
@@ -43,7 +41,7 @@ in
       after = [ "network.target" ];
 
       serviceConfig = {
-        ExecStart = "${inputs.self.packages.${system}.default}/bin/spt_webui_backend --env-files ${lib.concatStringsSep cfg.settings.environmentFiles "--env-files"}";
+        ExecStart = "${inputs.self.packages.${system}.default}/bin/spt_webui_backend --env-files ${cfg.settings.environmentFile}";
       };
       wantedBy = [ "multi-user.target" ];
     };
