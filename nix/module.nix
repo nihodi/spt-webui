@@ -15,16 +15,21 @@ in
 
   options.services.spt-webui = {
     enable = lib.mkEnableOption "spt-webui-backend";
+
+    settings = {
+
+      # TODO: declare settings other than this
+      environmentFile = lib.mkOption {
+        type = lib.types.path;
+        description = "File to load as environment. Used to configure secret options.";
+      };
+    };
   };
 
   config = lib.mkIf cfg.enable {
     assertions =
       if cfg.enable then
         [
-          {
-            assertion = false;
-            message = "test assertion :)";
-          }
 
         ]
       else
@@ -35,7 +40,9 @@ in
       description = "spt-webui backend";
       after = [ "network.target" ];
 
-      script = "${inputs.self.packages.${system}.default}/bin/spt_webui_backend";
+      serviceConfig = {
+        ExecStart = "${inputs.self.packages.${system}.default}/bin/spt_webui_backend --env-file ${cfg.settings.environmentFile}";
+      };
       wantedBy = [ "multi-user.target" ];
     };
   };
