@@ -90,12 +90,11 @@ in
         DISCORD_REDIRECT_URI=${cfg.settings.baseHref}api/auth/callback/discord
 
         SPOTIFY_REDIRECT_URI=${cfg.settings.baseHref}api/auth/callback
-        SPOTIFY_CLIENT_ID=${cfg.settings.spotifyClientId}
-        SPOTIFY_ALLOWED_ACCOUNT_ID=${cfg.settings.spotifyAllowedAccountId}
-
+        SPOTIFY_CLIENT_ID=${cfg.settings.spotify.clientId}
+        SPOTIFY_ALLOWED_ACCOUNT_ID=${cfg.settings.spotify.allowedAccountId}
         TOKEN_SAVE_LOCATION=/var/spt-webui/saved_token
 
-        ${lib.optionalString cfg.settings.spotify.playlistId != null cfg.settings.spotify.playlistId}
+        ${lib.optionalString cfg.settings.spotify.playlistId != null "SPOTIFY_PLAYLIST_ID=${cfg.settings.spotify.playlistId}"}
       '';
       user = "spt-webui-backend";
       group = "spt-webui-backend";
