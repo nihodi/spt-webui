@@ -159,18 +159,19 @@ in
 
         frontend-env = spt-packages.frontend-env {
           apiPrefix = "https://${cfg.settings.domain}${cfg.settings.baseHref}/api";
+          baseHref = cfg.settings.baseHref;
         };
         frontend = spt-packages.frontend { env = frontend-env; };
       in
 
       {
         virtualHosts.${cfg.settings.domain} = {
-          locations."/${lib.stripPrefix "/" cfg.settings.baseHref}" = {
+          locations."/${lib.removePrefix "/" cfg.settings.baseHref}" = {
             root = "${frontend}";
             tryFiles = "\$uri /index.html";
           };
 
-          locations."${if cfg.settings.baseHref != null then "/${lib.stripPrefix "/" cfg.settings.baseHref}/api" else "/api"}" = {
+          locations."${if cfg.settings.baseHref != null then "/${lib.removePrefix "/" cfg.settings.baseHref}/api" else "/api"}" = {
             proxyPass = "http://localhost:8000";
           };
         };
