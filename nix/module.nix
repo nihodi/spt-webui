@@ -37,7 +37,6 @@ in
       else
         [ ];
 
-    # FIXME: MAKE UNPRIVILEGED spt-webui USER SO THE BACKEND DOES NOT RUN AS ROOT!!
     systemd.services.spt-webui = {
       description = "spt-webui backend";
       after = [ "network.target" ];
@@ -52,6 +51,10 @@ in
       };
       wantedBy = [ "multi-user.target" ];
     };
+
+    systemd.tmpfiles.rules = [
+      "f /var/spt-webui/saved_token 0770 spt-webui-backend spt-webui-backend -"
+    ];
 
     users.users.spt-webui-backend = {
       isSystemUser = true;
