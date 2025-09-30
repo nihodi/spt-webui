@@ -40,10 +40,10 @@ in
       };
 
       baseHref = lib.mkOption {
-        type = lib.types.string;
+        type = lib.types.nullOr lib.types.string;
         description = "Base path where the application is deployed";
         example = "/spt-webui";
-        default = "/";
+        default = null;
       };
 
       spotify = {
@@ -165,12 +165,12 @@ in
 
       {
         virtualHosts.${cfg.settings.domain} = {
-          locations."/${cfg.settings.baseHref}" = {
+          locations."/${lib.stripPrefix "/" cfg.settings.baseHref}" = {
             root = "${frontend}";
             tryFiles = "\$uri /index.html";
           };
 
-          locations."/${cfg.settings.baseHref}/api" = {
+          locations."${if cfg.settings.baseHref != null then "/${lib.stripPrefix "/" cfg.settings.baseHref}/api" else "/api"}" = {
             proxyPass = "http://localhost:8000";
           };
         };
