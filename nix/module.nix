@@ -97,7 +97,9 @@ in
 
     environment.etc."spt-webui/env" =
       let
-        base = "https://${cfg.settings.domain}${cfg.settings.baseHref}";
+        base = "https://${cfg.settings.domain}${
+          lib.optionalString (cfg.settings.baseHref != null) cfg.settings.baseHref
+        }";
       in
       {
         text = ''
@@ -158,7 +160,9 @@ in
         spt-packages = inputs.self.packages.${pkgs.system};
 
         frontend-env = spt-packages.frontend-env {
-          apiPrefix = "https://${cfg.settings.domain}${lib.optionalString (cfg.settings.baseHref != null) cfg.settings.baseHref}/api";
+          apiPrefix = "https://${cfg.settings.domain}${
+            lib.optionalString (cfg.settings.baseHref != null) cfg.settings.baseHref
+          }/api";
           baseHref = cfg.settings.baseHref;
         };
         frontend = spt-packages.frontend { env = frontend-env; };
