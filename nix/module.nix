@@ -16,6 +16,10 @@ in
   options.services.spt-webui = {
     enable = lib.mkEnableOption "spt-webui-backend";
 
+    mysql = {
+      enable = lib.mkEnableOption "MySQL/MariaDB account and database creation";
+    };
+
     settings = {
 
       # TODO: declare settings other than this
@@ -95,7 +99,13 @@ in
         SPOTIFY_ALLOWED_ACCOUNT_ID=${cfg.settings.spotify.allowedAccountId}
         TOKEN_SAVE_LOCATION=/var/spt-webui/saved_token
 
-        ${lib.optionalString (cfg.settings.spotify.playlistId != null) "SPOTIFY_PLAYLIST_ID=${cfg.settings.spotify.playlistId}"}
+        ${lib.optionalString (
+          cfg.settings.spotify.playlistId != null
+        ) "SPOTIFY_PLAYLIST_ID=${cfg.settings.spotify.playlistId}"}
+
+        ${lib.optionalString (
+          cfg.mysql.enable
+        ) "DATABASE_URL=mariadb+pymysql:///spt_webui?unix_socket=/run/mysqld/mysqld.sock"}
       '';
       user = "spt-webui-backend";
       group = "spt-webui-backend";
@@ -112,6 +122,20 @@ in
     };
 
     users.groups.spt-webui-backend = {
+    };
+
+    # create database and database user if it is enabled
+    services.mysql = lib.mkIf cfg.mysql.enable {
+      ensureUsers = [
+        {
+          name = "spt-webui-backend";
+          ensurePermissions = {
+            "spt_webui.*" = "ALL PRIVILEGES";
+          };
+        }
+      ];
+
+      ensureDatabases = [ "spt_webui" ];
     };
   };
 }
