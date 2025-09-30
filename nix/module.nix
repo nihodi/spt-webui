@@ -166,10 +166,13 @@ in
 
       {
         virtualHosts.${cfg.settings.domain} = {
-          locations."/${lib.removePrefix "/" (lib.optionalString cfg.settings.baseHref)}" = {
-            root = "${frontend}";
-            tryFiles = "\$uri /index.html";
-          };
+          locations."/${
+            lib.removePrefix "/" (lib.optionalString (cfg.settings.baseHref != null) cfg.settings.baseHref)
+          }" =
+            {
+              root = "${frontend}";
+              tryFiles = "\$uri /index.html";
+            };
 
           locations."${
             if cfg.settings.baseHref != null then
