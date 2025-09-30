@@ -175,7 +175,8 @@ in
           }" =
             {
               alias = "${frontend}/";
-              tryFiles = "\$uri /index.html";
+              index = "index.html";
+              tryFiles = "\$uri \$uri/ /index.html";
             };
 
           locations."${
