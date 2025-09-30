@@ -181,16 +181,12 @@ in
               tryFiles = "\$uri \$uri/ /index.html";
             };
 
-          virtualHosts.${cfg.settings.domain} = {
-            locations."/${
-              lib.removePrefix "/" (
-                lib.optionalString (cfg.settings.baseHref != null) "${cfg.settings.baseHref}"
-              )
-            }" =
-              {
-                extraConfig = ''return 301 https://$host$request_uri/'';
-              };
-          };
+          locations."/${
+            lib.removePrefix "/" (lib.optionalString (cfg.settings.baseHref != null) "${cfg.settings.baseHref}")
+          }" =
+            {
+              extraConfig = ''return 301 https://$host$request_uri/'';
+            };
 
           locations."${
             if cfg.settings.baseHref != null then
