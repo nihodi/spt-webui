@@ -115,7 +115,7 @@
 
                 export const environment: Environment = {
                   api_prefix: "${apiPrefix}",
-                  base_href: ${if baseHref == null then "undefined" else "${baseHref}"}
+                  base_href: ${if baseHref == null then "undefined" else ''"${baseHref}"''}
                 }
               '';
             };
