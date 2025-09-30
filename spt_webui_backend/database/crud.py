@@ -137,6 +137,8 @@ def get_stats(db: Session) -> schemas.ApiStats:
         .join(models.RequestedSpotifySong, models.SongRequest.requested_song_id == models.RequestedSpotifySong.id)
     ).scalar()
 
+    total_listened = total_listened or 0
+
     song_request_timestamps = db.execute(
         sa.select(
             sa.func.DATE(models.SongRequest.timestamp).label("date"),
