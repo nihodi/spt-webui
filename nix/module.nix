@@ -104,7 +104,7 @@ in
         ) "SPOTIFY_PLAYLIST_ID=${cfg.settings.spotify.playlistId}"}
 
         ${lib.optionalString (
-          cfg.mariadb.enable
+          cfg.mysql.enable
         ) "DATABASE_URL=mariadb+pymysql:///spt_webui?unix_socket=/run/mysqld/mysqld.sock"}
       '';
       user = "spt-webui-backend";
@@ -125,7 +125,7 @@ in
     };
 
     # create database and database user if it is enabled
-    services.mysql = lib.mkIf cfg.mariadb.enable {
+    services.mysql = lib.mkIf cfg.mysql.enable {
       ensureUsers = [
         {
           name = "spt-webui-backend";
