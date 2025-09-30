@@ -53,7 +53,7 @@ in
     };
 
     systemd.tmpfiles.rules = [
-      "d /var/spt-webui 0600 spt-webui-backend spt-webui-backend -"
+      "f /var/spt-webui/saved_token 0600 spt-webui-backend spt-webui-backend -"
     ];
 
     users.users.spt-webui-backend = {
