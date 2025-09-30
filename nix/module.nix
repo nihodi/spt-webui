@@ -174,7 +174,7 @@ in
             lib.removePrefix "/" (lib.optionalString (cfg.settings.baseHref != null) "${cfg.settings.baseHref}/")
           }" =
             {
-              alias = "${frontend}";
+              alias = "${frontend}/";
               tryFiles = "\$uri /index.html";
             };
 
