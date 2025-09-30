@@ -26,31 +26,31 @@ in
         description = "File to load as environment. Used to configure secret options.";
       };
 
-      baseHref = {
+      baseHref = lib.mkOption {
         type = lib.types.string;
         description = "Base path where the application is deployed";
         example = "https://dodooc.dietzel.no/";
       };
 
       spotify = {
-        allowedAccountId = {
+        allowedAccountId = lib.mkOption {
           type = lib.types.string;
           description = "Account ID of the Spotify account that should be controlled from spt-webui";
         };
 
-        clientId = {
+        clientId = lib.mkOption {
           type = lib.types.string;
           description = "Spotify OAuth2 client id. The client secret is set using the `environmentFile`.";
         };
 
-        playlistId = {
+        playlistId = lib.mkOption {
           type = lib.types.nullOr lib.types.string;
           default = null;
           description = "Spotify playlist all requested songs get added to.";
         };
       };
 
-      discordClientId = {
+      discordClientId = lib.mkOption {
         type = lib.types.string;
         description = "Discord OAuth2 client id. The client secret is set using the `environmentFile`";
       };
