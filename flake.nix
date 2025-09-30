@@ -100,41 +100,45 @@
             package = pythonSet.spt-webui;
           };
 
-          frontend-env = {apiPrefix, baseHref ? "undefined"}: pkgs.writeTextFile {
-            name = "environment.prod.ts";
-            text = ''
-              export interface Environment {
-                api_prefix: string;
-                base_href?: string;
-              }
+          frontend-env =
+            {
+              apiPrefix,
+              baseHref ? null,
+            }:
+            pkgs.writeTextFile {
+              name = "environment.prod.ts";
+              text = ''
+                export interface Environment {
+                  api_prefix: string;
+                  base_href?: string;
+                }
 
-              export const environment: Environment = {
-                api_prefix: "${apiPrefix}",
-                base_href: "${baseHref}"
-              }
-            '';
-          };
+                export const environment: Environment = {
+                  api_prefix: "${apiPrefix}",
+                  base_href: ${if baseHref == null then "undefined" else "${baseHref}"}
+                }
+              '';
+            };
 
-          frontend = {env}: pkgs.buildNpmPackage {
-            pname = "spt-webui-frontend";
-            version = "0.0.0";
-            src = "${self}/spt-webui-frontend";
+          frontend =
+            { env }:
+            pkgs.buildNpmPackage {
+              pname = "spt-webui-frontend";
+              version = "0.0.0";
+              src = "${self}/spt-webui-frontend";
 
+              postPatch = ''
+                mkdir -p src/environments
+                cp ${env} src/environments/environment.prod.ts
+              '';
 
-            postPatch = ''
-            mkdir -p src/environments
-            cp ${env} src/environments/environment.prod.ts
-            '';
+              installPhase = ''
+                mkdir -p $out
+                mv dist/spt-webui-frontend/browser/* $out/
+              '';
 
-            installPhase = ''
-            mkdir -p $out
-            echo $out
-            ls -al dist/spt-webui-frontend
-            mv  dist/spt-webui-frontend/browser/* $out/
-            '';
-
-            npmDepsHash = "sha256-wtBSP87okYx/nwo1EMImo2oF7c4lDnDE+0Z/i+GXG5U=";
-          };
+              npmDepsHash = "sha256-wtBSP87okYx/nwo1EMImo2oF7c4lDnDE+0Z/i+GXG5U=";
+            };
         }
       );
     };
