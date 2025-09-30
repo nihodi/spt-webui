@@ -171,7 +171,7 @@ in
       {
         virtualHosts.${cfg.settings.domain} = {
           locations."/${
-            lib.removePrefix "/" (lib.optionalString (cfg.settings.baseHref != null) cfg.settings.baseHref)
+            lib.removePrefix "/" (lib.optionalString (cfg.settings.baseHref != null) "${cfg.settings.baseHref}/")
           }" =
             {
               alias = "${frontend}";
