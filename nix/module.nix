@@ -40,10 +40,10 @@ in
       };
 
       baseHref = lib.mkOption {
-        type = lib.types.string;
+        type = lib.types.nullOr lib.types.string;
         description = "Base path where the application is deployed";
         example = "/spt-webui";
-        default = "/";
+        default = null;
       };
 
       spotify = {
@@ -97,7 +97,9 @@ in
 
     environment.etc."spt-webui/env" =
       let
-        base = "https://${cfg.settings.domain}${cfg.settings.baseHref}";
+        base = "https://${cfg.settings.domain}${
+          lib.optionalString (cfg.settings.baseHref != null) cfg.settings.baseHref
+        }";
       in
       {
         text = ''
@@ -158,21 +160,33 @@ in
         spt-packages = inputs.self.packages.${pkgs.system};
 
         frontend-env = spt-packages.frontend-env {
-          apiPrefix = "https://${cfg.settings.domain}${cfg.settings.baseHref}/api";
+          apiPrefix = "https://${cfg.settings.domain}${
+            lib.optionalString (cfg.settings.baseHref != null) cfg.settings.baseHref
+          }/api";
+          baseHref = cfg.settings.baseHref;
         };
         frontend = spt-packages.frontend { env = frontend-env; };
       in
 
       {
         virtualHosts.${cfg.settings.domain} = {
-          locations."/${cfg.settings.baseHref}" = {
-            root = "${frontend}";
-            tryFiles = "\$uri /index.html";
-          };
+          locations."/${
+            lib.removePrefix "/" (lib.optionalString (cfg.settings.baseHref != null) cfg.settings.baseHref)
+          }" =
+            {
+              root = "${frontend}";
+              tryFiles = "\$uri /index.html";
+            };
 
-          locations."/${cfg.settings.baseHref}/api" = {
-            proxyPass = "http://localhost:8000";
-          };
+          locations."${
+            if cfg.settings.baseHref != null then
+              "/${lib.removePrefix "/" cfg.settings.baseHref}/api"
+            else
+              "/api"
+          }" =
+            {
+              proxyPass = "http://localhost:8000";
+            };
         };
       };
   };
