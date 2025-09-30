@@ -105,7 +105,7 @@ in
         text = ''
           FRONTEND_URL=${base}
           ALLOWED_ORIGIN=${base}:80
-          API_PREFIX=/api
+          API_PREFIX=/api${lib.optionalString (cfg.settings.baseHref != null) cfg.settings.baseHref}
 
           DISCORD_REDIRECT_URI=${base}/api/auth/callback/discord
           DISCORD_CLIENT_ID=${cfg.settings.discordClientId}
