@@ -65,7 +65,6 @@
     {
       nixosModules.spt-webui = import ./nix/module.nix inputs;
 
-
       devShells = forAllSystems (
         system:
         let
@@ -101,13 +100,41 @@
             package = pythonSet.spt-webui;
           };
 
-          #          frontend = pkgs.buildNpmPackage {
-          #            pname = "spt-webui-frontend";
-          #            version = "0.0.0";
-          #            src = "${self}/spt-webui-frontend";
-          #
-          #            npmDepsHash = "sha256-wtBSP87okYx/nwo1EMImo2oF7c4lDnDE+0Z/i+GXG5U=";
-          #          };
+          frontend-env = {apiPrefix, baseHref ? "undefined"}: pkgs.writeTextFile {
+            name = "environment.prod.ts";
+            text = ''
+              export interface Environment {
+                api_prefix: string;
+                base_href?: string;
+              }
+
+              export const environment: Environment = {
+                api_prefix: "${lib.escape apiPrefix}",
+                base_href: "${lib.escape baseHref}"
+              }
+            '';
+          };
+
+          frontend = {env}: pkgs.buildNpmPackage {
+            pname = "spt-webui-frontend";
+            version = "0.0.0";
+            src = "${self}/spt-webui-frontend";
+
+
+            postPatch = ''
+            mkdir -p src/environments
+            cp ${env} src/environments/environment.prod.ts
+            '';
+
+            installPhase = ''
+            mkdir -p $out
+            echo $out
+            ls -al dist/spt-webui-frontend
+            mv  dist/spt-webui-frontend/browser/* $out/
+            '';
+
+            npmDepsHash = "sha256-wtBSP87okYx/nwo1EMImo2oF7c4lDnDE+0Z/i+GXG5U=";
+          };
         }
       );
     };
