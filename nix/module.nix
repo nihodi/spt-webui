@@ -94,7 +94,7 @@ in
         SPOTIFY_ALLOWED_ACCOUNT_ID=${cfg.settings.spotify.allowedAccountId}
         TOKEN_SAVE_LOCATION=/var/spt-webui/saved_token
 
-        ${lib.optionalString cfg.settings.spotify.playlistId != null "SPOTIFY_PLAYLIST_ID=${cfg.settings.spotify.playlistId}"}
+        ${lib.optionalString (cfg.settings.spotify.playlistId != null) "SPOTIFY_PLAYLIST_ID=${cfg.settings.spotify.playlistId}"}
       '';
       user = "spt-webui-backend";
       group = "spt-webui-backend";
