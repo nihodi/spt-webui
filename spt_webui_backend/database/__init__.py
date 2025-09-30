@@ -5,7 +5,7 @@ import spt_webui_backend.database.models as models
 from spt_webui_backend.environment import ENVIRONMENT
 
 engine = sa.create_engine(
-    f"mariadb+pymysql://{ENVIRONMENT.database_user}:{ENVIRONMENT.database_password}@localhost/spt_webui",
+    ENVIRONMENT.database_url,
     pool_recycle=3600
 )
 

@@ -23,8 +23,7 @@ class Environment(BaseSettings):
 
     spotify_playlist_id: Optional[str] = None
 
-    database_user: str
-    database_password: str
+    database_url: str
 
     discord_client_id: str
     discord_client_secret: str
