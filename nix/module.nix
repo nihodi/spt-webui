@@ -40,7 +40,7 @@ in
       };
 
       baseHref = lib.mkOption {
-        type = lib.types.nullOr lib.types.string;
+        type = lib.types.nullOr lib.types.str;
         description = "Base path where the application is deployed";
         example = "/spt-webui";
         default = null;
@@ -48,24 +48,24 @@ in
 
       spotify = {
         allowedAccountId = lib.mkOption {
-          type = lib.types.string;
+          type = lib.types.str;
           description = "Account ID of the Spotify account that should be controlled from spt-webui";
         };
 
         clientId = lib.mkOption {
-          type = lib.types.string;
+          type = lib.types.str;
           description = "Spotify OAuth2 client id. The client secret is set using the `environmentFile`.";
         };
 
         playlistId = lib.mkOption {
-          type = lib.types.nullOr lib.types.string;
+          type = lib.types.nullOr lib.types.str;
           default = null;
           description = "Spotify playlist all requested songs get added to.";
         };
       };
 
       discordClientId = lib.mkOption {
-        type = lib.types.string;
+        type = lib.types.str;
         description = "Discord OAuth2 client id. The client secret is set using the `environmentFile`";
       };
     };
