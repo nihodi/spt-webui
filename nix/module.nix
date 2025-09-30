@@ -166,14 +166,20 @@ in
 
       {
         virtualHosts.${cfg.settings.domain} = {
-          locations."/${lib.removePrefix "/" cfg.settings.baseHref}" = {
+          locations."/${lib.removePrefix "/" (lib.optionalString cfg.settings.baseHref)}" = {
             root = "${frontend}";
             tryFiles = "\$uri /index.html";
           };
 
-          locations."${if cfg.settings.baseHref != null then "/${lib.removePrefix "/" cfg.settings.baseHref}/api" else "/api"}" = {
-            proxyPass = "http://localhost:8000";
-          };
+          locations."${
+            if cfg.settings.baseHref != null then
+              "/${lib.removePrefix "/" cfg.settings.baseHref}/api"
+            else
+              "/api"
+          }" =
+            {
+              proxyPass = "http://localhost:8000";
+            };
         };
       };
   };
