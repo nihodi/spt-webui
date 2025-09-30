@@ -88,6 +88,7 @@ in
         API_PREFIX=/api
 
         DISCORD_REDIRECT_URI=${cfg.settings.baseHref}api/auth/callback/discord
+        DISCORD_CLIENT_ID=${cfg.settings.discordClientId}api/auth/callback/discord
 
         SPOTIFY_REDIRECT_URI=${cfg.settings.baseHref}api/auth/callback
         SPOTIFY_CLIENT_ID=${cfg.settings.spotify.clientId}
