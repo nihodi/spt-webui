@@ -41,6 +41,8 @@ class Environment(BaseSettings):
     api_prefix: str = ""
     port: int = 8000
 
+    token_save_location: str = "saved_token"
+
     sentry_dsn: Optional[str] = None
 
     @classmethod
