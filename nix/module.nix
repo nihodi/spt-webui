@@ -187,7 +187,7 @@ in
             )
           }" =
             {
-              extraConfig = "return 301 /spt-webui/";
+              extraConfig = "return 301 /spt-webui/;";
             };
 
           locations."${
