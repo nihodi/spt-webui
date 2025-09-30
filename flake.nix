@@ -109,8 +109,8 @@
               }
 
               export const environment: Environment = {
-                api_prefix: "${lib.escape apiPrefix}",
-                base_href: "${lib.escape baseHref}"
+                api_prefix: "${apiPrefix}",
+                base_href: "${baseHref}"
               }
             '';
           };
