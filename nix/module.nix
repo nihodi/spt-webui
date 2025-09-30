@@ -47,7 +47,7 @@ in
 
         ExecStart = "${
           inputs.self.packages.${system}.default
-        }/bin/spt_webui_backend --env-file ${cfg.settings.environmentFile}";
+        }/bin/spt_webui_backend --env-file ${cfg.settings.environmentFile} --env-file /etc/spt-webui/env";
       };
       wantedBy = [ "multi-user.target" ];
     };
@@ -62,7 +62,6 @@ in
     };
 
     users.groups.spt-webui-backend = {
-
     };
   };
 }
