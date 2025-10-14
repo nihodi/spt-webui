@@ -30,7 +30,7 @@ target_metadata = spt_webui_backend.database.models.Base.metadata
 
 config.set_main_option(
     "sqlalchemy.url",
-    f"mariadb+pymysql://{ENVIRONMENT.database_user}:{ENVIRONMENT.database_password}@localhost/spt_webui"
+    ENVIRONMENT.database_url
 )
 
 

@@ -12,8 +12,8 @@ from spt_webui_backend.environment import ENVIRONMENT
 
 current_token: Optional[schemas.AccessToken] = None
 
-if os.path.isfile("saved_token"):
-    with open("saved_token", "r") as file:
+if os.path.isfile(ENVIRONMENT.token_save_location):
+    with open(ENVIRONMENT.token_save_location, "r") as file:
         try:
             current_token = schemas.AccessToken.model_validate(json.load(file))
         except (pydantic.ValidationError, json.JSONDecodeError):
@@ -26,7 +26,7 @@ def set_current_token(token: schemas.AccessToken) -> None:
     current_token = token
     # save to some file or something ig
 
-    with open("saved_token", "w") as file:
+    with open(ENVIRONMENT.token_save_location, "w") as file:
         file.write(str(token.model_dump_json()))
         print("saved token to file.")
 

@@ -1,24 +1,33 @@
-[tool.poetry]
-name = "spt-webui-backend"
+[project]
+name = "spt-webui"
 version = "0.1.0"
-description = ""
-authors = ["Niklas Dietzel <niklas@dietzel.no>"]
+description = "Add your description here"
 readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "alembic>=1.16",
+    "fastapi>=0.116",
+    "itsdangerous>=2.2.0",
+    "oauthlib>=3.3.1",
+    "pydantic-settings>=2.10.0",
+    "pymysql>=1.1.0",
+    "requests-oauthlib>=2.0.0",
+    "sentry-sdk>=2.34.0",
+    "setuptools>=80.9.0",
+    "sqlalchemy>=2.0.0",
+    "uvicorn>=0.37.0",
+]
 
-[tool.poetry.dependencies]
-python = "^3.11"
-fastapi = "^0.114.1"
-pydantic-settings = "^2.3.4"
-oauthlib = "^3.2.2"
-requests-oauthlib = "^2.0.0"
-sqlalchemy = "^2.0.31"
-pymysql = "^1.1.1"
-alembic = "^1.13.2"
-itsdangerous = "^2.2.0"
-fastapi-cli = "^0.0.5"
-sentry-sdk = {extras = ["fastapi"], version = "^2.16.0"}
+[project.scripts]
+spt_webui_backend = "spt_webui_backend.__main__:main"
 
 
 [build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages]
+find = {}
+
+[tool.setuptools.package-data]
+"*" = ["*.ini"]
