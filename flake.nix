@@ -27,6 +27,9 @@
     inputs@{
       nixpkgs,
       self,
+      pyproject-nix,
+      uv2nix,
+      pyproject-build-systems,
       ...
     }:
     let
@@ -67,7 +70,16 @@
         {
 
           # backend
-          default = import ./nix/packages/backend.nix inputs { inherit system; };
+          default = import ./nix/packages/backend.nix {
+            inherit
+              system
+              pkgs
+              lib
+              pyproject-nix
+              uv2nix
+              pyproject-build-systems
+              ;
+          };
 
           # frontend env
           # requires an attrSet with some attributes present to build. see ./nix/packages/frontend-env.nix for details

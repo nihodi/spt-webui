@@ -1,16 +1,17 @@
 # returns a spt-webui-backend package based on inputs and a system
 {
-  nixpkgs,
+  pkgs,
+  lib,
+  system,
+
+  # inputs
   pyproject-nix,
   uv2nix,
   pyproject-build-systems,
   ...
-}@inputs:
-{ system }:
+}:
 
 let
-  inherit (nixpkgs) lib;
-
   workspace = uv2nix.lib.workspace.loadWorkspace { workspaceRoot = ../..; };
   overlay = workspace.mkPyprojectOverlay {
     # overlay with the packages from uv.lock
@@ -30,7 +31,6 @@ let
         ]
       );
 
-  pkgs = nixpkgs.legacyPackages.${system};
   inherit (pkgs.callPackages pyproject-nix.build.util { }) mkApplication;
 in
 
