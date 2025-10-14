@@ -1,5 +1,5 @@
 {
-  description = "Develop Python on Nix with uv";
+  description = "spt-webui flake. provides packages and a nixos module";
 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
