@@ -26,9 +26,6 @@
   outputs =
     inputs@{
       nixpkgs,
-      uv2nix,
-      pyproject-nix,
-      pyproject-build-systems,
       self,
       ...
     }:
@@ -36,33 +33,9 @@
       inherit (nixpkgs) lib;
       forAllSystems = lib.genAttrs lib.systems.flakeExposed;
 
-      workspace = uv2nix.lib.workspace.loadWorkspace { workspaceRoot = ./.; };
-      overlay = workspace.mkPyprojectOverlay {
-        # overlay with the packages from uv.lock
-        sourcePreference = "wheel";
-      };
-
-      pythonSets = forAllSystems (
-        # creates a pythonSet for each system
-        system:
-        let
-          pkgs = nixpkgs.legacyPackages.${system};
-          python = pkgs.python313;
-        in
-        (pkgs.callPackage pyproject-nix.build.packages {
-          # i have no clue what this does
-          inherit python;
-        }).overrideScope
-          (
-            lib.composeManyExtensions [
-              pyproject-build-systems.overlays.wheel
-              overlay
-            ]
-          )
-      );
-
     in
     {
+      # expose nixos module
       nixosModules.spt-webui = import ./nix/module.nix inputs;
 
       devShells = forAllSystems (
@@ -90,55 +63,19 @@
         system:
         let
           pkgs = nixpkgs.legacyPackages.${system};
-          pythonSet = pythonSets.${system};
-          inherit (pkgs.callPackages pyproject-nix.build.util { }) mkApplication;
-
         in
         {
-          default = mkApplication {
-            venv = pythonSet.mkVirtualEnv "application-env" workspace.deps.default;
-            package = pythonSet.spt-webui;
-          };
 
-          frontend-env =
-            {
-              apiPrefix,
-              baseHref ? null,
-            }:
-            pkgs.writeTextFile {
-              name = "environment.prod.ts";
-              text = ''
-                export interface Environment {
-                  api_prefix: string;
-                  base_href?: string;
-                }
+          # backend
+          default = import ./nix/packages/backend.nix inputs { inherit system; };
 
-                export const environment: Environment = {
-                  api_prefix: "${apiPrefix}",
-                  base_href: ${if baseHref == null then "undefined" else ''"${baseHref}"''}
-                }
-              '';
-            };
+          # frontend env
+          # requires an attrSet with some attributes present to build. see ./nix/packages/frontend-env.nix for details
+          frontend-env = import ./nix/packages/frontend-env.nix { inherit pkgs; };
 
-          frontend =
-            { env }:
-            pkgs.buildNpmPackage {
-              pname = "spt-webui-frontend";
-              version = "0.0.0";
-              src = "${self}/spt-webui-frontend";
-
-              postPatch = ''
-                mkdir -p src/environments
-                cp ${env} src/environments/environment.prod.ts
-              '';
-
-              installPhase = ''
-                mkdir -p $out
-                mv dist/spt-webui-frontend/browser/* $out/
-              '';
-
-              npmDepsHash = "sha256-wtBSP87okYx/nwo1EMImo2oF7c4lDnDE+0Z/i+GXG5U=";
-            };
+          # frontend
+          # requires an attrSet with en env attribute set to a built frontend-env
+          frontend = import ./nix/packages/frontend.nix { inherit pkgs self; };
         }
       );
     };
