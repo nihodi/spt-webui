@@ -100,7 +100,7 @@ class SpotifyContextObject(BaseModel):
 
 
 class SpotifyPlaybackState(BaseModel):
-    context: SpotifyContextObject
+    context: Optional[SpotifyContextObject]
     item: SpotifyTrackObject
 
     progress_ms: int
