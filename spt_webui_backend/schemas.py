@@ -92,7 +92,7 @@ class QueueTrackObject(SpotifyTrackObject):
     queue_type: Literal["queue", "next_up"] = "next_up"
 
 class SpotifyContextObject(BaseModel):
-    type: Literal["artist", "playlist", "album", "show"]
+    type: Literal["artist", "playlist", "album", "show", "collection"]
     href: str
     uri: str
 
