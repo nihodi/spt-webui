@@ -14,6 +14,8 @@ class CliArgs(BaseSettings):
 CLI_ARGS: CliArgs = CliArgs()
 
 class Environment(BaseSettings):
+    api_dev: bool = False
+
     spotify_client_id: str
     spotify_client_secret: str
 
