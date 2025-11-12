@@ -108,7 +108,7 @@ def discord_login_redirect():
 
 
 @router.get("/auth/callback/discord")
-def spotify_auth_callback(
+def discord_auth_callback(
         request: Request,
         code: Optional[str] = None,
         error: Optional[str] = None,
