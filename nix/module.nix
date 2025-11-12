@@ -80,29 +80,12 @@ in
       else
         [ ];
 
-    systemd.services.spt-webui = {
-      description = "spt-webui backend";
-      after = [ "network.target" ];
-
-      serviceConfig = {
-        User = "spt-webui-backend";
-        Group = "spt-webui-backend";
-
-        ExecStart = "${
-          inputs.self.packages.${system}.default
-        }/bin/spt_webui_backend --env-file ${cfg.settings.environmentFile} --env-file /etc/spt-webui/env";
-      };
-      wantedBy = [ "multi-user.target" ];
-    };
-
-    environment.etc."spt-webui/env" =
+    systemd.services.spt-webui =
       let
         base = "https://${cfg.settings.domain}${
           lib.optionalString (cfg.settings.baseHref != null) cfg.settings.baseHref
         }";
-      in
-      {
-        text = ''
+        envFile = pkgs.writeText "spt-webui-env" ''
           FRONTEND_URL=${base}
           ALLOWED_ORIGIN=${base}:80
           API_PREFIX=${lib.optionalString (cfg.settings.baseHref != null) cfg.settings.baseHref}/api
@@ -121,9 +104,21 @@ in
 
           ${lib.optionalString (cfg.mysql.enable) "DATABASE_URL=mariadb+pymysql:///spt_webui?unix_socket=/run/mysqld/mysqld.sock"}
         '';
-        user = "spt-webui-backend";
-        group = "spt-webui-backend";
-        mode = "0440";
+
+        backendPackage = inputs.self.packages.${system}.default;
+      in
+
+      {
+        description = "spt-webui backend";
+        after = [ "network.target" ];
+
+        serviceConfig = {
+          User = "spt-webui-backend";
+          Group = "spt-webui-backend";
+
+          ExecStart = "${backendPackage}/bin/spt_webui_backend --env-file ${cfg.settings.environmentFile} --env-file ${envFile}";
+        };
+        wantedBy = [ "multi-user.target" ];
       };
 
     systemd.tmpfiles.rules = [
@@ -182,9 +177,7 @@ in
             };
 
           locations."= /${
-            lib.removePrefix "/" (
-              lib.optionalString (cfg.settings.baseHref != null) "${cfg.settings.baseHref}"
-            )
+            lib.removePrefix "/" (lib.optionalString (cfg.settings.baseHref != null) "${cfg.settings.baseHref}")
           }" =
             {
               extraConfig = "return 301 /spt-webui/;";
