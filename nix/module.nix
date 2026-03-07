@@ -152,7 +152,7 @@ in
 
     services.nginx =
       let
-        spt-packages = inputs.self.packages.${pkgs.system};
+        spt-packages = inputs.self.packages.${system};
 
         frontend-env = spt-packages.frontend-env {
           apiPrefix = "https://${cfg.settings.domain}${
