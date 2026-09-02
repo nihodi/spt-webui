@@ -56,6 +56,7 @@
             shellHook = ''
               unset PYTHONPATH
               uv sync
+              alias ng='npm run ng --'
               . .venv/bin/activate
             '';
           };
