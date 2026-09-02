@@ -16,5 +16,5 @@ pkgs.buildNpmPackage {
     mv dist/spt-webui-frontend/browser/* $out/
   '';
 
-  npmDepsHash = "sha256-wtBSP87okYx/nwo1EMImo2oF7c4lDnDE+0Z/i+GXG5U=";
+  npmDepsHash = "sha256-AgVclvdq0d/flHT/fQ1ivKaNtfYgqbkFlu0Tmc87pBw=";
 }
