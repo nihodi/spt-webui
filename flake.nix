@@ -51,6 +51,7 @@
             packages = [
               pkgs.python3
               pkgs.uv
+              pkgs.nodejs_24
             ];
 
             shellHook = ''
