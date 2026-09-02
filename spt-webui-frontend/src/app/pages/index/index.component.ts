@@ -38,22 +38,21 @@ const matchesSpotifyUrl: ValidatorFn = (control: AbstractControl): ValidationErr
 
 
 @Component({
-	selector: 'app-index',
-	standalone: true,
-	imports: [
-		TrackCardComponent,
-		AsyncPipe,
-		ReactiveFormsModule,
-		TrackListComponent,
-		PlaybackStateDisplayComponent,
-		SpinnerComponent,
-		JsonPipe,
-		RollingCounterComponent,
-		BaseChartDirective,
-		AppPopularTracksListComponent
-	],
-	templateUrl: './index.component.html',
-	styleUrl: './index.component.sass'
+    selector: 'app-index',
+    imports: [
+        TrackCardComponent,
+        AsyncPipe,
+        ReactiveFormsModule,
+        TrackListComponent,
+        PlaybackStateDisplayComponent,
+        SpinnerComponent,
+        JsonPipe,
+        RollingCounterComponent,
+        BaseChartDirective,
+        AppPopularTracksListComponent
+    ],
+    templateUrl: './index.component.html',
+    styleUrl: './index.component.sass'
 })
 export class IndexComponent {
 	constructor(

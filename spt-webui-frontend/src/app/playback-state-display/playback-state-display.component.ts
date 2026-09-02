@@ -4,15 +4,14 @@ import { AsyncPipe, NgClass } from "@angular/common";
 import { millisecondsToTimeString, PlaybackState } from "../api-services/models";
 
 @Component({
-	selector: 'app-playback-state-display',
-	standalone: true,
-	imports: [
-		IconComponent,
-		AsyncPipe,
-		NgClass
-	],
-	templateUrl: './playback-state-display.component.html',
-	styleUrl: './playback-state-display.component.sass'
+    selector: 'app-playback-state-display',
+    imports: [
+        IconComponent,
+        AsyncPipe,
+        NgClass
+    ],
+    templateUrl: './playback-state-display.component.html',
+    styleUrl: './playback-state-display.component.sass'
 })
 export class PlaybackStateDisplayComponent {
 	playbackState: InputSignal<PlaybackState> = input.required<PlaybackState>();

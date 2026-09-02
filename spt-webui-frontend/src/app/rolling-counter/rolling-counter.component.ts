@@ -1,11 +1,10 @@
 import { Component, effect, input } from '@angular/core';
 
 @Component({
-	selector: 'app-rolling-counter',
-	standalone: true,
-	imports: [],
-	templateUrl: './rolling-counter.component.html',
-	styleUrl: './rolling-counter.component.sass'
+    selector: 'app-rolling-counter',
+    imports: [],
+    templateUrl: './rolling-counter.component.html',
+    styleUrl: './rolling-counter.component.sass'
 })
 export class RollingCounterComponent {
 	value = input.required<number>();

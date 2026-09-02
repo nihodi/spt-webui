@@ -5,11 +5,10 @@ import { NotificationListComponent } from "./notification-list/notification-list
 
 
 @Component({
-	selector: 'app-root',
-	standalone: true,
-	imports: [RouterOutlet, HeaderComponent, NotificationListComponent],
-	templateUrl: './app.component.html',
-	styleUrl: './app.component.sass'
+    selector: 'app-root',
+    imports: [RouterOutlet, HeaderComponent, NotificationListComponent],
+    templateUrl: './app.component.html',
+    styleUrl: './app.component.sass'
 })
 export class AppComponent {
 
