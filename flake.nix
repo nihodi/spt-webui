@@ -69,7 +69,7 @@
         let
           pkgs = nixpkgs.legacyPackages.${system};
         in
-        {
+        rec {
 
           # backend
           default = import ./nix/packages/backend.nix {
@@ -86,10 +86,12 @@
           # frontend env
           # requires an attrSet with some attributes present to build. see ./nix/packages/frontend-env.nix for details
           frontend-env = import ./nix/packages/frontend-env.nix { inherit pkgs; };
+          frontend-env-dev = import ./nix/packages/frontend-env.nix { inherit pkgs; } { apiPrefix = "http://localhost:8000"; };
 
           # frontend
           # requires an attrSet with en env attribute set to a built frontend-env
           frontend = import ./nix/packages/frontend.nix { inherit pkgs self; };
+          frontend-dev = import ./nix/packages/frontend.nix { inherit pkgs self; } { env = frontend-env-dev; };
         }
       );
     };
