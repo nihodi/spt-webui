@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 import {
 	AbstractControl,
 	FormBuilder,
@@ -52,6 +52,7 @@ const matchesSpotifyUrl: ValidatorFn = (control: AbstractControl): ValidationErr
         AppPopularTracksListComponent
     ],
     templateUrl: './index.component.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     styleUrl: './index.component.sass'
 })
 export class IndexComponent {

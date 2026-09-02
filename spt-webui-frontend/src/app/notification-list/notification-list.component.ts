@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { NotificationsService } from "../notifications.service";
 import { AsyncPipe, JsonPipe, NgClass } from "@angular/common";
 
@@ -10,6 +10,7 @@ import { AsyncPipe, JsonPipe, NgClass } from "@angular/common";
         NgClass
     ],
     templateUrl: './notification-list.component.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     styleUrl: './notification-list.component.sass'
 })
 export class NotificationListComponent {

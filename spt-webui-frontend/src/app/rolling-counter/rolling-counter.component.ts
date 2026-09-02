@@ -1,9 +1,10 @@
-import { Component, effect, input } from '@angular/core';
+import { Component, effect, input, ChangeDetectionStrategy } from '@angular/core';
 
 @Component({
     selector: 'app-rolling-counter',
     imports: [],
     templateUrl: './rolling-counter.component.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     styleUrl: './rolling-counter.component.sass'
 })
 export class RollingCounterComponent {

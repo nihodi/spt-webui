@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { Component, signal, ChangeDetectionStrategy } from '@angular/core';
 import { AuthService } from "../state-services/auth.service";
 import { Observable } from "rxjs";
 import { UserData } from "../api-services/models";
@@ -14,6 +14,7 @@ import { NotificationsService } from "../notifications.service";
         NgClass
     ],
     templateUrl: './header.component.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     styleUrl: './header.component.sass'
 })
 export class HeaderComponent {

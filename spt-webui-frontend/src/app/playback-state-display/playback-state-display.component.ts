@@ -1,4 +1,4 @@
-import { Component, input, InputSignal } from '@angular/core';
+import { Component, input, InputSignal, ChangeDetectionStrategy } from '@angular/core';
 import { IconComponent } from "../icon/icon.component";
 import { AsyncPipe, NgClass } from "@angular/common";
 import { millisecondsToTimeString, PlaybackState } from "../api-services/models";
@@ -11,6 +11,7 @@ import { millisecondsToTimeString, PlaybackState } from "../api-services/models"
         NgClass
     ],
     templateUrl: './playback-state-display.component.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     styleUrl: './playback-state-display.component.sass'
 })
 export class PlaybackStateDisplayComponent {

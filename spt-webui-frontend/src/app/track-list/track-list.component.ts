@@ -1,4 +1,4 @@
-import { Component, computed, input, Signal } from '@angular/core';
+import { Component, computed, input, Signal, ChangeDetectionStrategy } from '@angular/core';
 import { CommonSong, DbSong, millisecondsToTimeString, toCommonSong, TrackObject } from "../api-services/models";
 
 
@@ -6,6 +6,7 @@ import { CommonSong, DbSong, millisecondsToTimeString, toCommonSong, TrackObject
     selector: 'app-track-list',
     imports: [],
     templateUrl: './track-list.component.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     styleUrl: './track-list.component.sass'
 })
 export class TrackListComponent {
